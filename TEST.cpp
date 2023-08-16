@@ -12,16 +12,27 @@ x + 2x + 3*x = 5x^2
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
+// взял значения с потолка, наверное плохо, но вроде работает =)
 #define MAX_INPUT_LENGTH 256
 #define MAX_NUMBER_LENGTH 32
-#define EPSILON 0.0000001 // взял значение с потолка, наверное плохо, но вроде работает =)
+#define EPSILON 0.0000001
+/*
+isEquationInput true - ввод целой строки
+isEquationInput false - ввод коэффициентов по-отдельности
+*/
+#define isEquationInput false
 
 //#define DEBUG // режим отладки
 
 double a, b, c; // a*x^2 + b*x + c
 
-// Запрашивает ввод, задает a, b, c
-void takeInput();
+// Запрашивает ввод, задает a, b, c. Использует ввод коэффициентов по-отдельности
+void takeCoefficientInput();
+// Запрашивает ввод, задает a, b, c. Использует ввод строки целиком
+void takeEquationInput();
+// Запрашивает коэффициент
+void askCoefficient(double* coef, const char name);
 // Убирает пробелы, заменяет запятые на точки и т.д.(стандартизирует строку, может поменять длину)
 void toDefault(char* input, unsigned int* inputLength);
 // Задаёт a, b, c. Работает со стандартизированной строкой
@@ -33,7 +44,7 @@ void solve();
 // Сравниваем double (типо)
 bool areSameDouble(double f, double s);
 
-void takeInput()
+void takeEquationInput()
 {
 	char input[MAX_INPUT_LENGTH];
 	printf("Enter your equation: ");
@@ -269,8 +280,51 @@ void solve()
 		}
 	}
 }
+
+void askCoefficient(double* coef, const char name)
+{
+	int validInput = 0;
+	do
+	{
+		// Просим ввести коэффициент
+		printf("Please enter a coefficient %c: ", name);
+		#ifdef DEBUG
+			printf("validInput: %d\nNumber %c = %f\n", validInput, name ,*coef);
+		#endif
+		validInput = scanf("%lf", coef);
+		// Если scanf возвращает 0
+		if (validInput == 0)
+		{
+			// Ругаем юзера
+			printf("Invalid input.\n");
+			// Очищаем буфер (без этого не работает)
+			while (getchar() != '\n');
+		}
+	} while (validInput == 0);
+	// Чистим буфер
+	while (getchar() != '\n');
+}
+
+void takeCoefficientInput()
+{
+	askCoefficient(&a, 'a');
+	askCoefficient(&b, 'b');
+	askCoefficient(&c, 'c');
+	// Красиво выводим =)
+	formattedCout();
+}
+
+
 int main()
 {
-    takeInput();
+	if(isEquationInput)
+	{
+		takeEquationInput();
+	}
+	else
+	{
+		takeCoefficientInput();
+	}
+
     solve();
 }
