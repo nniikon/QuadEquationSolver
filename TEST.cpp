@@ -15,14 +15,12 @@ x + 2x + 3*x = 5x^2
 
 // взял значения с потолка, наверное плохо, но вроде работает =)
 #define MAX_INPUT_LENGTH 256
-#define MAX_NUMBER_LENGTH 32
+#define MAX_CHUNK_LENGTH 32
 #define EPSILON 0.0000001
-/*
-isEquationInput true - ввод целой строки
-isEquationInput false - ввод коэффициентов по-отдельности
-*/
 #define allowedCharacters "1234567890-+=xX*^., "
-#define isEquationInput true
+
+// Отвечает за выбор типа ввода
+bool isEquationInput = true;
 
 //#define DEBUG // режим отладки
 
@@ -38,16 +36,54 @@ void askCoefficient(double* coef, const char name);
 bool isCorrect(const char* input);
 // Стандартизирует строку, может поменять длину
 void toDefault(char* input, unsigned int* inputLength);
-// Убирает пробелы из строки
+// Убирает символы из строки
 void deleteCharacter(char* input, unsigned int* inputLength, const char character);
 // Задаёт a, b, c. Работает со стандартизированной строкой
-void setCoefficients(char* input, unsigned int inputLength);
-// Красиво выводит хлам который мог написать юзер
+void setCoefficients(char* input);
+// Задает коэффициенты из кусочков строки ввода. Работет с setCoefficients
+void setChunk(char* chunk, bool passedEqualSign);
+// Красиво выводит уравнение
 void formattedCout();
 // Решает уравнение
 void solve();
-// Сравниваем double (типо)
+// Сравниваем double
 bool areSameDouble(double f, double s);
+
+
+int main()
+{
+	// Спрашиваем у пользователя желаемый вид ввода
+	printf("%s%s%s", "What type of input would you prefer?\n",
+			"(1) Coefficient input\n",
+			"(2) Equation input\n");
+	char choice = getchar();
+	if(choice == '1')
+		isEquationInput = false;
+	else if(choice == '2')
+		isEquationInput = true;
+	else
+	{
+		printf("Invalid input. But I really like the second option, so I chose it for you =\)\n");
+	}
+	// Чистим буфер
+	while(getchar() != '\n');
+
+	// Запрашиваем ввод пользователя
+	if(isEquationInput)
+	{
+		takeEquationInput();
+	}
+	else
+	{
+		takeCoefficientInput();
+	}
+
+	// Красиво выводим
+	formattedCout();
+
+	// Решаем
+    solve();
+}
 
 void takeEquationInput()
 {
@@ -55,28 +91,26 @@ void takeEquationInput()
 	char input[MAX_INPUT_LENGTH];
 	do
 	{
+		// Запрашивает ввод
 		printf("Enter your equation: ");
-		scanf("%[^\n]", input); // я это нагуглил, scanf останавливается только на \n
+		scanf("%[^\n]", input);
+		// Проверяем корректность ввода
 		if (!isCorrect(input))
 		{
-			printf("Invalid input.\n");
+			printf("Invalid input.\n"); // Ругаем пользователя
 			input[0] = '\n'; // "очищаем" строку
 			while (getchar() != '\n'); // очищаем буфер
 		}
 	} while (!isCorrect(input));
+
     unsigned int inputLength = strlen(input); // длина строки
+
 	// Приведем к стандартному виду
 	toDefault(input, &inputLength);
+
 	// Зададим коэффициенты
-	#ifdef DEBUG
-		printf("\nDEBUG: toDefault done\n");
-    #endif
-	setCoefficients(input, inputLength);
-	#ifdef DEBUG
-		printf("\nDEBUG: setCoefficients done\n");
-    #endif
-	// Красиво выводим =)
-	formattedCout();
+	setCoefficients(input);
+
 	#ifdef DEBUG
 		printf("\nDEBUG: standartised equation: %s\n", input);
         printf("DEBUG: a = %f \nDEBUG: b = %f \nDEBUG: c = %f\n\n", a, b, c);
@@ -89,12 +123,12 @@ bool isCorrect(const char* input)
     bool isListed;
 
     // Проходим по каждому символу во входной строке.
-    for(int i = 0; i < strlen(input); i++)
+    for(unsigned int i = 0; i < strlen(input); i++)
     {
         isListed = false;
 
         // Проверяем, присутствует ли текущий символ среди разрешенных символов.
-        for(int j = 0; j < strlen(allowedCharacters); j++)
+        for(unsigned int j = 0; j < strlen(allowedCharacters); j++)
         {
             if(input[i] == allowedCharacters[j])
             {
@@ -140,11 +174,14 @@ void toDefault(char* input, unsigned int* inputLength)
 {
 	/*
 	Стандартная строка должна выглядить примерно так:
+
 	5x^2-6x+12=5x-12x^2
+
 	*/
 	// Удаляем необязательные символы
 	deleteCharacter(input, inputLength, ' ');
 	deleteCharacter(input, inputLength, '*');
+
 	// Стандартизируем похожие знаки
 	for (unsigned int i = 0; i < *inputLength; i++)
 	{
@@ -160,146 +197,164 @@ void toDefault(char* input, unsigned int* inputLength)
 	}
 
 }
-void setCoefficients(char* input, unsigned int inputLength)
+
+void setChunk(char* chunk, bool passedEqualSign)
 {
-	// Множитель, после знака равно все коэффициенты будут умножаться на -1.0
-	float passedEqualSign = 1.0f;
-	// Мы поделим строку ввода на части, каждая из которых будет храниться здесь
-	char strNumber[MAX_NUMBER_LENGTH]{};
-	// Находим коэффициенты
-	for(unsigned int i = 0; i <= inputLength; i++)
+	/*
+	Эта функция принимает кусок строки ввода и задает с его помощью коэффициенты
+	Примеры ввода:
+	+5x^2
+	-3.4x
+	x
+	+5.3
+	*/
+
+	bool isA = false,
+		 isB = false,
+		 isC = false;
+	double value = 0.0;
+	unsigned len = strlen(chunk);
+
+	//
+
+	// Определим, к какому коэффициенту мы будем прибавлять value
+
+	// Если строка заканчивается на x^2, то прибавляем к а
+	if (len >= 3 && chunk[len - 3] == 'x' && chunk[len - 2] == '^' && chunk[len - 1] == '2')
 	{
-		if(input[i] == '+' || input[i] == '-' || input[i] == '\0' || input[i] == ' ')
+		isA = true;
+
+		// Рассмотрим случаи x^2, +x^2, -x^2
+		if( (len == 3) || (len == 4 && (chunk[0] == '-' || chunk[0] == '+')) )
 		{
-			// Дошли до ограничителя, strNumber выглядит примерно так: "-5.2x^2" или "+7.23x"
-			if(i >= 3 && strNumber[i - 2] == '^') // Если заканчивается на x^2 (a)
-			{
-				strNumber[i - 3] = '\0'; // Вместо x записываем \0. В строке остаётся только число
-				a += atof(strNumber) * passedEqualSign;
-				if(i == 3 || strNumber[i - 4] == '+' || strNumber[i - 4] == ' ')
-					// Если перед x нет коэффициента, то это +- 1
-				{
-					a += 1 * passedEqualSign;
-				}
-				if(i != 3 && strNumber[i - 4] == '-') // Если перед х минус
-				{
-					a -= 1 * passedEqualSign;
-				}
-			}
-			else if(strNumber[i - 1] == 'x') // Если заканчивается на x (b)
-			{
-				strNumber[i - 1] = '\0'; // Заменяем его \0. В строке остаётся только число
-				b += atof(strNumber) * passedEqualSign;
-				if(i == 1 || strNumber[i - 2] == '+' || strNumber[i - 2] == ' ')
-					// Если перед x нет коэффициента, то это +- 1
-				{
-					b += 1 * passedEqualSign;
-				}
-				if(i != 1 && strNumber[i - 2] == '-') // Если перед х минус
-				{
-					b -= 1 * passedEqualSign;
-				}
-			}
-			else // Если это просто число
-			{
-				strNumber[i] = '\0';
-				c += atof(strNumber) * passedEqualSign;
-			}
-			for(unsigned int j = 0; j < i; j++)
-			{
-				strNumber[j] = ' '; // Зачищаем, чтобы потом ничего не мешало
-			}
-
-		}
-
-		strNumber[i] = input[i]; // Копируем символы из input в strNumber, пока не дойдем до +- или ' '
-
-		if(input[i] == ' ') // это знак равенства, честно
-		{
-			passedEqualSign = -1.0f;
-			// Если мы прошли знак равенства, то меняем знак, как в 7 классе учили
+			// Тогда вместо x удобно поставить единичку, которую люди не любят писать
+			chunk[len - 3] = '1';
 		}
 	}
+	// Если строка заканчивается на x, то прибавляем к b
+	else if (len >= 1 && chunk[len - 1] == 'x')
+	{
+		isB = true;
+
+		// Рассмотрим случаи x, +х, -х
+		if( (len == 1) || (len == 2 && (chunk[0] == '-' || chunk[0] == '+')) )
+		{
+			// Тогда вместо x удобно поставить единичку, которую люди не любят писать
+			chunk[len - 1] = '1';
+		}
+	}
+	// В любом другом случае, это просто число, прибавляем к c
+	else
+	{
+		isC = true;
+	}
+
+	// Зададим value
+	value = atof(chunk);
+
+	// Если мы по правую сторону уравнения, то переносим влево (с минусом)
+	if (passedEqualSign)
+	{
+		value = -value;
+	}
+
+	// Ну и прибавляем value к коэффициентам
+	if(isA)
+	{
+		a += value;
+		return;
+	}
+	if(isB)
+	{
+		b += value;
+		return;
+	}
+	if(isC)
+	{
+		c += value;
+		return;
+	}
+}
+
+void setCoefficients(char* input)
+{
+    bool passedEqualSign = false;  // Флаг для отслеживания, прошли ли знак равенства
+    int len = strlen(input);        // Длина входной строки
+    char strChunk[MAX_CHUNK_LENGTH]{};  // Временный буфер для хранения кусков строки
+    int chunkCounter = 0;           // Счетчик для индекса буфера
+
+    // Пройдемся по исходной строке
+    for (int i = 0; i <= len; i++)
+    {
+        // Если дошли до разделяющего знака (+, -, =, \0)
+        if (input[i] == '+' || input[i] == '-' || input[i] == '=' || input[i] == '\0')
+        {
+            strChunk[chunkCounter] = '\0';  // Завершаем строку в буфере
+            chunkCounter = 0;  // Сбрасываем счетчик для следующего куска
+            setChunk(strChunk, passedEqualSign);  // Обрабатываем кусок
+
+            // Если текущий знак - равенство, устанавливаем флаг
+            if (input[i] == '=')
+            {
+                passedEqualSign = true;
+                continue; // Пропустим итерацию, чтобы равно не помешало обработке
+            }
+        }
+
+        strChunk[chunkCounter] = input[i];  // Добавляем символ в буфер
+        chunkCounter++;  // Увеличиваем счетчик буфера
+    }
 }
 
 
 void formattedCout()
 {
-	// Компилятор выкидывает предупреждение на эту функцию
-	// Но она всего лишь красиво выводит уравнение
-	// Если что-то пойдет не так это лишь добавит лишний пробел или что-то вроде того
-	// Я решил забить и не переписывать (хотя стоило бы, она громоздкая)
-	if (a == 0.0 && b == 0.0 && c == 0.0)
+	// Просто красиво выводим уравнение, ничего интересного
+	if (a == 0 && b == 0)
 	{
-		printf("0 = 0\n");
+		if (c == 0)
+			printf("0 == 0\n");
+		else
+			printf("%g != 0\n", c);
 		return;
 	}
-	if (a == 0.0 && b == 0.0 && c != 0.0)
+
+    if (a != 0)
 	{
-		printf("%g != 0\n", c);
-		return;
-	}
-	if (a ==  1.0)
+        if (a == -1)
+            printf("-x^2 ");
+        else if (a == 1)
+            printf("x^2 ");
+        else
+            printf("%gx^2 ", a);
+    }
+
+    if (b != 0)
 	{
-		printf("x^2 ");
-	}
-	else if(a == -1.0)
-	{
-		printf("-x^2 ");
-	}
-	else if (a != 0.0)
-	{
-		printf("%gx^2 ", a);
-	}
-	// без комментариев)0)
-	if (a != 0)
-	{
-		if (b ==  1.0)
-		{
-			printf("+ x ");
-		}
-		else if(b == -1.0)
-		{
-			printf("- x ");
-		}
-		else if(b > 0.0)
-		{
-			printf("+ %gx ", b);
-		}
-		else if(b < 0.0)
-		{
-			printf("- %gx ", -b);
-		}
-	}
-	else
-	{
-		if (b ==  1.0)
-		{
-			printf("x ");
-		}
-		else if(b == -1.0)
-		{
-			printf("-x ");
-		}
-		else if(b > 0.0)
-		{
-			printf("%gx ", b);
-		}
-		else if(b < 0.0)
-		{
-			printf("-%gx ", -b);
-		}
-	}
-	//
-	if(c > 0.0)
-	{
-		printf("+ %g ", c);
-	}
-	else if(c < 0.0)
-	{
-		printf("- %g ", -c);
-	}
+        if (b < 0)
+            printf("- ");
+        else if (a != 0)
+            printf("+ ");
+
+        if (b == -1)
+            printf("x ");
+        else if (b == 1)
+            printf("x ");
+        else
+            printf("%gx ", fabs(b));
+    }
+
+    if (c != 0)
+    {
+        if (c < 0)
+            printf("- %g ", -c);
+        else if (b != 0)
+            printf("+ %g ", c);
+        else
+            printf("%g ", c);
+    }
 	printf("= 0\n");
+
 }
 
 bool areSameDouble(double f, double s)
@@ -352,11 +407,11 @@ void askCoefficient(double* coef, const char name)
 	do
 	{
 		// Просим ввести коэффициент
-		printf("Please enter a coefficient %c: ", name);
+		printf("Please enter coefficient %c: ", name);
+		validInput = scanf("%lf", coef);
 		#ifdef DEBUG
 			printf("validInput: %d\nNumber %c = %f\n", validInput, name ,*coef);
 		#endif
-		validInput = scanf("%lf", coef);
 		// Если scanf возвращает 0
 		if (validInput == 0)
 		{
@@ -375,21 +430,4 @@ void takeCoefficientInput()
 	askCoefficient(&a, 'a');
 	askCoefficient(&b, 'b');
 	askCoefficient(&c, 'c');
-	// Красиво выводим =)
-	formattedCout();
-}
-
-
-int main()
-{
-	if(isEquationInput)
-	{
-		takeEquationInput();
-	}
-	else
-	{
-		takeCoefficientInput();
-	}
-
-    solve();
 }
