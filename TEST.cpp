@@ -21,7 +21,8 @@ x + 2x + 3*x = 5x^2
 isEquationInput true - ввод целой строки
 isEquationInput false - ввод коэффициентов по-отдельности
 */
-#define isEquationInput false
+#define allowedCharacters "1234567890-+=xX*^., "
+#define isEquationInput true
 
 //#define DEBUG // режим отладки
 
@@ -33,8 +34,12 @@ void takeCoefficientInput();
 void takeEquationInput();
 // Запрашивает коэффициент
 void askCoefficient(double* coef, const char name);
-// Убирает пробелы, заменяет запятые на точки и т.д.(стандартизирует строку, может поменять длину)
+// Проверяет строку на корректность
+bool isCorrect(const char* input);
+// Стандартизирует строку, может поменять длину
 void toDefault(char* input, unsigned int* inputLength);
+// Убирает пробелы из строки
+void deleteCharacter(char* input, unsigned int* inputLength, const char character);
 // Задаёт a, b, c. Работает со стандартизированной строкой
 void setCoefficients(char* input, unsigned int inputLength);
 // Красиво выводит хлам который мог написать юзер
@@ -46,9 +51,19 @@ bool areSameDouble(double f, double s);
 
 void takeEquationInput()
 {
+	// Создадим строку, в которой будет храниться ввод пользователя
 	char input[MAX_INPUT_LENGTH];
-	printf("Enter your equation: ");
-	scanf("%[^\n]", input); // я это нагуглил, scanf останавливается только на \n
+	do
+	{
+		printf("Enter your equation: ");
+		scanf("%[^\n]", input); // я это нагуглил, scanf останавливается только на \n
+		if (!isCorrect(input))
+		{
+			printf("Invalid input.\n");
+			input[0] = '\n'; // "очищаем" строку
+			while (getchar() != '\n'); // очищаем буфер
+		}
+	} while (!isCorrect(input));
     unsigned int inputLength = strlen(input); // длина строки
 	// Приведем к стандартному виду
 	toDefault(input, &inputLength);
@@ -69,32 +84,81 @@ void takeEquationInput()
 
 }
 
-void toDefault(char* input, unsigned int* inputLength)
+bool isCorrect(const char* input)
 {
+    bool isListed;
+
+    // Проходим по каждому символу во входной строке.
+    for(int i = 0; i < strlen(input); i++)
+    {
+        isListed = false;
+
+        // Проверяем, присутствует ли текущий символ среди разрешенных символов.
+        for(int j = 0; j < strlen(allowedCharacters); j++)
+        {
+            if(input[i] == allowedCharacters[j])
+            {
+                isListed = true;
+                break;
+            }
+        }
+
+        // Если текущий символ не найден среди разрешенных, возвращаем false.
+        if(!isListed)
+            return false;
+    }
+
+    // Если все символы прошли проверку, возвращаем true.
+    return true;
+}
+
+void deleteCharacter(char* input, unsigned int* inputLength, const char character)
+{
+	// Переменная для отслеживания текущей позиции, на которую будет перенесен следующий символ.
+	int currentEmptySpace = 0;
+
+	// Проходимся по всей исходной строке.
 	for(unsigned int i = 0; i < *inputLength; i++)
 	{
-		if(input[i] == ' ' || input[i] == '*') // Если находим ненужный символ
+		// Если текущий символ не совпадает с символом, который нужно удалить...
+		if(input[i] != character)
 		{
-			for(unsigned int j = i; j < *inputLength; j++)
-			{
-				input[j] = input[j + 1]; // Сдвигаем всю строку влево, чтобы его убрать
-			}
-			input[*inputLength] = '\0'; // А также двигаем конец строки и её длину
-			(*inputLength)--;
-		}
-		else if(input[i] == ',')
-		{
-			input[i] = '.';
-		}
-		else if(input[i] == 'X')
-		{
-			input[i] = 'x';
-		}
-		if(input[i] == '=')
-		{
-			input[i] = ' '; // Заменим "=" на " ", это будет полезно позже
+			// Переносим текущий символ на позицию текущего "пустого" места и увеличиваем его.
+			input[currentEmptySpace] = input[i];
+			currentEmptySpace++;
 		}
 	}
+
+	// Обновляем длину строки после удаления символов.
+	*inputLength = currentEmptySpace;
+
+	// Добавляем завершающий нулевой символ, чтобы строка оставалась корректной.
+	input[currentEmptySpace] = '\0';
+}
+
+void toDefault(char* input, unsigned int* inputLength)
+{
+	/*
+	Стандартная строка должна выглядить примерно так:
+	5x^2-6x+12=5x-12x^2
+	*/
+	// Удаляем необязательные символы
+	deleteCharacter(input, inputLength, ' ');
+	deleteCharacter(input, inputLength, '*');
+	// Стандартизируем похожие знаки
+	for (unsigned int i = 0; i < *inputLength; i++)
+	{
+		switch(input[i])
+		{
+		case 'X':
+			input[i] = 'x';
+			break;
+		case ',':
+			input[i] = '.';
+			break;
+		}
+	}
+
 }
 void setCoefficients(char* input, unsigned int inputLength)
 {
@@ -157,6 +221,7 @@ void setCoefficients(char* input, unsigned int inputLength)
 		}
 	}
 }
+
 
 void formattedCout()
 {
