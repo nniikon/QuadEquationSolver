@@ -42,7 +42,13 @@ void takeInput()
 	// Приведем к стандартному виду
 	toDefault(input, &inputLength);
 	// Зададим коэффициенты
+	#ifdef DEBUG
+		printf("\nDEBUG: toDefault done\n");
+    #endif
 	setCoefficients(input, inputLength);
+	#ifdef DEBUG
+		printf("\nDEBUG: setCoefficients done\n");
+    #endif
 	// Красиво выводим =)
 	formattedCout();
 	#ifdef DEBUG
@@ -91,16 +97,16 @@ void setCoefficients(char* input, unsigned int inputLength)
 		if(input[i] == '+' || input[i] == '-' || input[i] == '\0' || input[i] == ' ')
 		{
 			// Дошли до ограничителя, strNumber выглядит примерно так: "-5.2x^2" или "+7.23x"
-			if(strNumber[i - 2] == '^') // Если заканчивается на x^2 (a)
+			if(i >= 3 && strNumber[i - 2] == '^') // Если заканчивается на x^2 (a)
 			{
 				strNumber[i - 3] = '\0'; // Вместо x записываем \0. В строке остаётся только число
 				a += atof(strNumber) * passedEqualSign;
-				if(strNumber[i - 4] == '+' || i == 3 || strNumber[i - 4] == ' ')
+				if(i == 3 || strNumber[i - 4] == '+' || strNumber[i - 4] == ' ')
 					// Если перед x нет коэффициента, то это +- 1
 				{
 					a += 1 * passedEqualSign;
 				}
-				if(strNumber[i - 4] == '-') // Если перед х минус
+				if(i != 3 && strNumber[i - 4] == '-') // Если перед х минус
 				{
 					a -= 1 * passedEqualSign;
 				}
@@ -109,12 +115,12 @@ void setCoefficients(char* input, unsigned int inputLength)
 			{
 				strNumber[i - 1] = '\0'; // Заменяем его \0. В строке остаётся только число
 				b += atof(strNumber) * passedEqualSign;
-				if(strNumber[i - 2] == '+' || i == 1 || strNumber[i - 2] == ' ')
+				if(i == 1 || strNumber[i - 2] == '+' || strNumber[i - 2] == ' ')
 					// Если перед x нет коэффициента, то это +- 1
 				{
 					b += 1 * passedEqualSign;
 				}
-				if(strNumber[i - 2] == '-') // Если перед х минус
+				if(i != 1 && strNumber[i - 2] == '-') // Если перед х минус
 				{
 					b -= 1 * passedEqualSign;
 				}
