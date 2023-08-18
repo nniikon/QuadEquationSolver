@@ -22,47 +22,52 @@ x + 2x + 3*x = 5x^2
 #define coefficientInput 2
 
 //#define DEBUG // режим отладки
-
+typedef struct {
+    double a;
+    double b;
+    double c;
+} Coefficients;
 // Спршивает у пользователя желаемый тип ввода
 int askPreferedInput();
 // Запрашивает ввод, задает a, b, c. Использует ввод коэффициентов по-отдельности
-void takeCoefficientInput(double* a, double* b, double* c);
+void takeCoefficientInput(Coefficients* coefficients);
 // Запрашивает ввод, задает a, b, c. Использует ввод строки целиком
-void takeEquationInput(double* a, double* b, double* c);
+void takeEquationInput(Coefficients* coefficients);
 // Запрашивает коэффициент
 void askCoefficient(double* coef, const char name);
 // Проверяет строку на корректность
 bool isCorrect(const char* input);
 // Стандартизирует строку, может поменять длину
-void toDefault(char* input, unsigned int* inputLength);
+void normalizeEquationInput(char* input, unsigned int* inputLength);
 // Убирает символы из строки
 void deleteCharacter(char* input, unsigned int* inputLength, const char character);
 // Задаёт a, b, c. Работает со стандартизированной строкой
-void setCoefficients(char* input, double* a, double* b, double* c);
+void setCoefficients(char* input, Coefficients* coefficients);
 // Задает коэффициенты из кусочков строки ввода. Работет с setCoefficients
-void setChunk(char* chunk, bool passedEqualSign, double* a, double* b, double* c);
-// Красиво выводит уравнение
-void formattedCout(double a, double b, double c);
-// Решает уравнение
-void solve(const double a, const double b, const double c);
-// Сравниваем double
+void setChunk(char* chunk, bool passedEqualSign, Coefficients* coefficients);
+// Uses coefficients to print out the equation in the "ax^2 + bx + c" format.
+void formattedCout(const Coefficients coefficients);
+// Uses coefficients to solve the equations. Prints out the result.
+void solve(const Coefficients coefficients);
+// Compares doubles.
 bool areSameDouble(double f, double s);
 
 
 int main()
 {
-	double a, b, c; // a*x^2 + b*x + c
+	Coefficients coefficients{0, 0, 0};
 	int inputType;
+
 
 	inputType = askPreferedInput();
 	// Запрашиваем ввод пользователя
 	switch(inputType)
 	{
 	case equationInput:
-		takeEquationInput(&a, &b, &c);
+		takeEquationInput(&coefficients);
 		break;
 	case coefficientInput:
-		takeCoefficientInput(&a, &b, &c);
+		takeCoefficientInput(&coefficients);
 		break;
 	default:
 		printf("Invalid input type\n");
@@ -70,11 +75,12 @@ int main()
 	}
 
 	// Красиво выводим
-	formattedCout(a, b, c);
+	formattedCout(coefficients);
 
 	// Решаем
-    solve(a, b, c);
+    solve(coefficients);
 }
+
 
 int askPreferedInput()
 {
@@ -82,20 +88,20 @@ int askPreferedInput()
 	printf("%s%s%s", "What type of input would you prefer?\n",
 			"(1) Coefficient input\n",
 			"(2) Equation input\n");
-	char choice = getchar();
-	if(choice == '1')
+	int choice = getchar();
+	if(choice == int('1'))
 		return coefficientInput;
-	else if(choice == '2')
+	else if(choice == int('2'))
 		return equationInput;
 	else
 	{
-		printf("Invalid input. But I really like the second option, so I chose it for you =\)\n");
+		printf("Invalid input. But I really like the second option, so I chose it for you\n");
 		return equationInput;
 	}
 }
 
 
-void takeEquationInput(double* a, double* b, double* c)
+void takeEquationInput(Coefficients* coefficients)
 {
 
 	// Чистим буфер
@@ -120,10 +126,10 @@ void takeEquationInput(double* a, double* b, double* c)
     unsigned int inputLength = strlen(input); // длина строки
 
 	// Приведем к стандартному виду
-	toDefault(input, &inputLength);
+	normalizeEquationInput(input, &inputLength);
 
 	// Зададим коэффициенты
-	setCoefficients(input, a, b, c);
+	setCoefficients(input, coefficients);
 
 	#ifdef DEBUG
 		printf("\nDEBUG: standartised equation: %s\n", input);
@@ -184,268 +190,262 @@ void deleteCharacter(char* input, unsigned int* inputLength, const char characte
 	input[currentEmptySpace] = '\0';
 }
 
-void toDefault(char* input, unsigned int* inputLength)
+void normalizeEquationInput(char* input, unsigned int* inputLength)
 {
-	/*
-	Стандартная строка должна выглядить примерно так:
+    // A normalized equation string should look something like:
 
-	5x^2-6x+12=5x-12x^2
+    // 5x^2-6x+12=5x-12x^2
 
-	*/
-	// Удаляем необязательные символы
-	deleteCharacter(input, inputLength, ' ');
-	deleteCharacter(input, inputLength, '*');
+    // Remove unnecessary characters (it will decrease inputLength)
+    deleteCharacter(input, inputLength, ' ');
+    deleteCharacter(input, inputLength, '*');
 
-	// Стандартизируем похожие знаки
-	for (unsigned int i = 0; i < *inputLength; i++)
-	{
-		switch(input[i])
-		{
-		case 'X':
-			input[i] = 'x';
+    // Replace similar characters
+    for (unsigned int i = 0; i < *inputLength; i++)
+    {
+        switch(input[i])
+        {
+        case 'X':
+            input[i] = 'x';
+            break;
+        case ',':
+            input[i] = '.';
+            break;
+		default:
+			// it's not needed
 			break;
-		case ',':
-			input[i] = '.';
-			break;
-		}
-	}
-
+        }
+    }
 }
 
-void setChunk(char* chunk, bool passedEqualSign, double* a, double* b, double* c)
+void setChunk(char* chunk, bool passedEqualSign, Coefficients* coefficients)
 {
-	/*
-	Эта функция принимает кусок строки ввода и задает с его помощью коэффициенты
-	Примеры ввода:
-	+5x^2
-	-3.4x
-	x
-	+5.3
-	*/
+    bool isA = false,
+         isB = false,
+         isC = false;
+    double value = 0.0;
+    unsigned len = strlen(chunk);
 
-	bool isA = false,
-		 isB = false,
-		 isC = false;
-	double value = 0.0;
-	unsigned len = strlen(chunk);
+    // Determine which coefficient (a, b, or c) the value will be added to.
 
-	//
+    // If the chunk ends with x^2, add to 'a' coefficient.
+    if (len >= 3 && chunk[len - 3] == 'x' && chunk[len - 2] == '^' && chunk[len - 1] == '2')
+    {
+        isA = true;
 
-	// Определим, к какому коэффициенту мы будем прибавлять value
+        // Handle cases like x^2, +x^2, -x^2
+        if ((len == 3) || (len == 4 && (chunk[0] == '-' || chunk[0] == '+')))
+        {
+            chunk[len - 3] = '1'; // Replace 'x' with 1
+        }
+    }
+    // If the chunk ends with x, add to 'b' coefficient.
+    else if (len >= 1 && chunk[len - 1] == 'x')
+    {
+        isB = true;
 
-	// Если строка заканчивается на x^2, то прибавляем к а
-	if (len >= 3 && chunk[len - 3] == 'x' && chunk[len - 2] == '^' && chunk[len - 1] == '2')
-	{
-		isA = true;
+        // Handle cases like x, +x, -x
+        if ((len == 1) || (len == 2 && (chunk[0] == '-' || chunk[0] == '+')))
+        {
+            chunk[len - 1] = '1'; // Replace 'x' with 1
+        }
+    }
+    // Otherwise, treat it as a constant and add to 'c' coefficient.
+    else
+    {
+        isC = true;
+    }
 
-		// Рассмотрим случаи x^2, +x^2, -x^2
-		if( (len == 3) || (len == 4 && (chunk[0] == '-' || chunk[0] == '+')) )
-		{
-			// Тогда вместо x удобно поставить единичку, которую люди не любят писать
-			chunk[len - 3] = '1';
-		}
-	}
-	// Если строка заканчивается на x, то прибавляем к b
-	else if (len >= 1 && chunk[len - 1] == 'x')
-	{
-		isB = true;
+    // Set the value from the chunk.
+    value = atof(chunk);
 
-		// Рассмотрим случаи x, +х, -х
-		if( (len == 1) || (len == 2 && (chunk[0] == '-' || chunk[0] == '+')) )
-		{
-			// Тогда вместо x удобно поставить единичку, которую люди не любят писать
-			chunk[len - 1] = '1';
-		}
-	}
-	// В любом другом случае, это просто число, прибавляем к c
-	else
-	{
-		isC = true;
-	}
+    // If on the right-hand side of the equation, negate the value.
+    if (passedEqualSign)
+    {
+        value = -value;
+    }
 
-	// Зададим value
-	value = atof(chunk);
-
-	// Если мы по правую сторону уравнения, то переносим влево (с минусом)
-	if (passedEqualSign)
-	{
-		value = -value;
-	}
-
-	// Ну и прибавляем value к коэффициентам
-	if(isA)
-	{
-		*a += value;
-		return;
-	}
-	if(isB)
-	{
-		*b += value;
-		return;
-	}
-	if(isC)
-	{
-		*c += value;
-		return;
-	}
+    // Add the value to the appropriate coefficient.
+    if (isA)
+    {
+        coefficients->a += value;
+        return;
+    }
+    if (isB)
+    {
+        coefficients->b += value;
+        return;
+    }
+    if (isC)
+    {
+        coefficients->c += value;
+        return;
+    }
 }
 
-void setCoefficients(char* input, double* a, double* b, double* c)
+void setCoefficients(char* input, Coefficients* coefficients)
 {
-    bool passedEqualSign = false;  // Флаг для отслеживания, прошли ли знак равенства
-    int len = strlen(input);        // Длина входной строки
-    char strChunk[MAX_CHUNK_LENGTH]{};  // Временный буфер для хранения кусков строки
-    int chunkCounter = 0;           // Счетчик для индекса буфера
+    bool passedEqualSign = false;  // Flag to track whether the equal sign has been encountered
+    int len = strlen(input);        // Length of the input string
+    char strChunk[MAX_CHUNK_LENGTH]{};  // Temporary buffer to store chunks of the string
+    int chunkCounter = 0;           // Counter for the buffer index
 
-    // Пройдемся по исходной строке
+    // Iterate through the input string
     for (int i = 0; i <= len; i++)
     {
-        // Если дошли до разделяющего знака (+, -, =, \0)
+        // If a delimiter is encountered (+, -, =, \0)
         if (input[i] == '+' || input[i] == '-' || input[i] == '=' || input[i] == '\0')
         {
-            strChunk[chunkCounter] = '\0';  // Завершаем строку в буфере
-            chunkCounter = 0;  // Сбрасываем счетчик для следующего куска
-            setChunk(strChunk, passedEqualSign, a, b, c);  // Обрабатываем кусок
+            strChunk[chunkCounter] = '\0';  // Terminate the string in the buffer
+            chunkCounter = 0;  // Reset the counter for the next chunk
+            setChunk(strChunk, passedEqualSign, coefficients);  // Process the chunk
 
-            // Если текущий знак - равенство, устанавливаем флаг
+            // If the current symbol is the equal sign, set the flag
             if (input[i] == '=')
             {
                 passedEqualSign = true;
-                continue; // Пропустим итерацию, чтобы равно не помешало обработке
+                continue; // Skip iteration to prevent equal sign from interfering with processing
             }
         }
 
-        strChunk[chunkCounter] = input[i];  // Добавляем символ в буфер
-        chunkCounter++;  // Увеличиваем счетчик буфера
+        strChunk[chunkCounter] = input[i];  // Add the character to the buffer
+        chunkCounter++;  // Increment the buffer counter
     }
 }
 
 
-void formattedCout(const double a, const double b, const double c)
+void formattedCout(const Coefficients coefficients)
 {
-	// Просто красиво выводим уравнение, ничего интересного
-	if (areSameDouble(a, 0.0) && areSameDouble(b, 0.0))
-	{
-		if (areSameDouble(c, 0.0))
-			printf("0 == 0\n");
-		else
-			printf("%g != 0\n", c);
-		return;
-	}
 
-    if (!areSameDouble(a, 0.0))
-	{
-        if (areSameDouble(a, -1.0))
+    // Handle cases where both a and b coefficients are zero.
+    if (areSameDouble(coefficients.a, 0.0) && areSameDouble(coefficients.b, 0.0))
+    {
+        if (areSameDouble(coefficients.c, 0.0))
+            printf("0 == 0\n");
+        else
+            printf("%g != 0\n", coefficients.c);
+        return;
+    }
+
+    // a coefficient.
+    if (!areSameDouble(coefficients.a, 0.0))
+    {
+        if (areSameDouble(coefficients.a, -1.0))
             printf("-x^2 ");
-        else if (areSameDouble(a, 1.0))
+        else if (areSameDouble(coefficients.a, 1.0))
             printf("x^2 ");
         else
-            printf("%gx^2 ", a);
+            printf("%gx^2 ", coefficients.a);
     }
 
-    if (!areSameDouble(b, 0.0))
-	{
-        if (b < 0)
+    // b coefficient.
+    if (!areSameDouble(coefficients.b, 0.0))
+    {
+        if (coefficients.b < 0)
             printf("- ");
-        else if (!areSameDouble(a, 0.0))
+        else if (!areSameDouble(coefficients.a, 0.0))
             printf("+ ");
 
-        if (areSameDouble(b, -1.0))
+        if (areSameDouble(coefficients.b, -1.0))
             printf("x ");
-        else if (areSameDouble(b, 1.0))
+        else if (areSameDouble(coefficients.b, 1.0))
             printf("x ");
         else
-            printf("%gx ", fabs(b));
+            printf("%gx ", fabs(coefficients.b));
     }
 
-    if (!areSameDouble(c, 0.0))
+    // c coefficient.
+    if (!areSameDouble(coefficients.c, 0.0))
     {
-        if (c < 0)
-            printf("- %g ", -c);
-        else if (!areSameDouble(b, 0.0))
-            printf("+ %g ", c);
+        if (coefficients.c < 0)
+            printf("- %g ", -coefficients.c);
+        else if (!areSameDouble(coefficients.b, 0.0) || !areSameDouble(coefficients.a, 0.0))
+            printf("+ %g ", coefficients.c);
         else
-            printf("%g ", c);
+            printf("%g ", coefficients.c);
     }
-	printf("= 0\n");
 
+    printf("= 0\n");
 }
 
 bool areSameDouble(double f, double s)
 {
-	return fabs(f - s) < EPSILON; // база
+	return fabs(f - s) < EPSILON;
 }
 
-void solve(const double a, const double b, const double c)
+void solve(const Coefficients coefficients)
 {
-	if(!areSameDouble(a, 0.0)) // квадратное уравнение
-	{
-		double d = b * b - 4 * a * c; // Дискриминант!
-		if(d > 0)
-		{
-			printf("Two real solutions were found!\n");
-			printf("x1 = %g\n", (-b + sqrt(d))/(2.0*a) );
-			printf("x2 = %g\n", (-b - sqrt(d))/(2.0*a) );
-		}
-		else if(areSameDouble(d, 0.0)) // а вот тут уже нормально сравниваем
-		{
-			printf("Only one real solution was found!\n");
-			printf("x = %g\n", -b / (2.0 * a));
-		}
-		else
-		{
-			printf("No real solutions were found =(\n");
-		}
-	}
-	else if(!areSameDouble(b, 0.0)) // линейное уравнение
-	{
-		printf("Only one real solution was found\n");
-		printf("x = %g\n", -(c / b));
-	}
-	else
-	{
-		if(areSameDouble(c, 0.0))
-		{
-			printf("Rare ending unlocked,\nAn infinite number of solutions were found!\n");
-		}
-		else
-		{
-			printf("No solutions were found =(\n");
-		}
-	}
+    // Check if it's a quadratic equation (a is not zero).
+    if (!areSameDouble(coefficients.a, 0.0))
+    {
+        double d = coefficients.b * coefficients.b - 4 * coefficients.a * coefficients.c; // Calculate the discriminant.
+
+        // Check the value of the discriminant.
+        if (d > 0)
+        {
+            printf("Two real solutions were found!\n");
+            printf("x1 = %g\n", (-coefficients.b + sqrt(d)) / (2.0 * coefficients.a)); // Calculate and print the first root.
+            printf("x2 = %g\n", (-coefficients.b - sqrt(d)) / (2.0 * coefficients.a)); // Calculate and print the second root.
+        }
+        else if (areSameDouble(d, 0.0)) // Check if discriminant is close to zero.
+        {
+            printf("Only one real solution was found!\n");
+            printf("x = %g\n", -coefficients.b / (2.0 * coefficients.a)); // Calculate and print the only root.
+        }
+        else
+        {
+            printf("No real solutions were found\n"); // No real roots.
+        }
+    }
+    else if (!areSameDouble(coefficients.b, 0.0)) // Linear equation (a is zero, b is not zero).
+    {
+        printf("Only one real solution was found\n");
+        printf("x = %g\n", -(coefficients.c / coefficients.b)); // Calculate and print the linear root.
+    }
+    else // Constant equation (a and b are zero).
+    {
+        if (areSameDouble(coefficients.c, 0.0)) // Check if the constant term is almost zero.
+        {
+            printf("An infinite number of solutions were found!\n"); // Infinite solutions.
+        }
+        else
+        {
+            printf("No solutions were found =(\n"); // No solutions (constant is non-zero).
+        }
+    }
 }
 
 void askCoefficient(double* coef, const char name)
 {
-	int validInput = 0;
-	do
-	{
-		// Просим ввести коэффициент
-		printf("Please enter coefficient %c: ", name);
-		validInput = scanf("%lf", coef);
-		#ifdef DEBUG
-			printf("validInput: %d\nNumber %c = %f\n", validInput, name ,*coef);
-		#endif
-		// Если scanf возвращает 0
-		if (validInput == 0)
-		{
-			// Ругаем юзера
-			printf("Invalid input.\n");
-			// Очищаем буфер (без этого не работает)
-			while (getchar() != '\n');
-		}
-	} while (validInput == 0);
-	// Чистим буфер
-	while (getchar() != '\n');
+    int validInput = 0; // Flag to track whether the input is valid.
+
+    // A loop that keeps prompting the user until valid input is provided.
+    do
+    {
+        printf("Please enter coefficient %c: ", name);
+        validInput = scanf("%lf", coef); // Attempt to read a double from the user's input.
+
+        #ifdef DEBUG
+            printf("validInput: %d\nNumber %c = %f\n", validInput, name ,*coef);
+        #endif
+
+        if (validInput == 0)
+        {
+            printf("Invalid input.\n");
+            while (getchar() != '\n'); // Clear the input buffer.
+        }
+    } while (validInput == 0); // Continue the loop as long as the input is invalid.
+
+    // Clear the input buffer.
+    while (getchar() != '\n');
 }
 
-void takeCoefficientInput(double* a, double* b, double* c)
+void takeCoefficientInput(Coefficients* coefficients)
 {
-
-	// Чистим буфер
+	// Clean the input buffer.
 	while(getchar() != '\n');
 
-	askCoefficient(a, 'a');
-	askCoefficient(b, 'b');
-	askCoefficient(c, 'c');
+	askCoefficient(&(coefficients->a), 'a');
+    askCoefficient(&(coefficients->b), 'b');
+    askCoefficient(&(coefficients->c), 'c');
 }
