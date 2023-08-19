@@ -1,6 +1,5 @@
 /*
-Программа решает уравнение до второй степени!
-Примеры ввода:
+Equation Input might look something like this:
 5x^2 - 3x + 15 = 14 - 2x + 3x^2
 5*x^2 - 15 = 0
 3x^2 - 2x + 2
@@ -13,40 +12,43 @@ x + 2x + 3*x = 5x^2
 #include <string.h>
 #include <math.h>
 
-// взял значения с потолка, наверное плохо, но вроде работает =)
+// Some values to play with
 #define MAX_INPUT_LENGTH 256
 #define MAX_CHUNK_LENGTH 32
 #define EPSILON 0.0000001
 #define allowedCharacters "1234567890-+=xX*^., "
-#define equationInput 1
-#define coefficientInput 2
+// Input types
+#define COEFFICIENT_INPUT 1
+#define EQUATION_INPUT 2
 
-//#define DEBUG // режим отладки
+//#define DEBUG
+
 typedef struct {
     double a;
     double b;
     double c;
 } Coefficients;
-// Спршивает у пользователя желаемый тип ввода
-int askPreferedInput();
-// Запрашивает ввод, задает a, b, c. Использует ввод коэффициентов по-отдельности
+
+// Prompts the user to select their preferred input type.
+int askPreferredInput();
+// Prompts the user to input coefficients and sets them in the provided structure.
 void takeCoefficientInput(Coefficients* coefficients);
-// Запрашивает ввод, задает a, b, c. Использует ввод строки целиком
+// Prompts the user to input an equation and sets the coefficients in the provided structure.
 void takeEquationInput(Coefficients* coefficients);
-// Запрашивает коэффициент
+// Prompts the user to imput a single coefficient.
 void askCoefficient(double* coef, const char name);
-// Проверяет строку на корректность
+// Checks whether the characters in the input string are among the allowed characters.
 bool isCorrect(const char* input);
-// Стандартизирует строку, может поменять длину
+// Processes the input string, preparing it for2 use with the setCoefficients() function.
 void normalizeEquationInput(char* input, unsigned int* inputLength);
-// Убирает символы из строки
+// Removes occurrences of a specified character from the given string.
 void deleteCharacter(char* input, unsigned int* inputLength, const char character);
-// Задаёт a, b, c. Работает со стандартизированной строкой
+// Takes normalized string. Sets coefficients
 void setCoefficients(char* input, Coefficients* coefficients);
-// Задает коэффициенты из кусочков строки ввода. Работет с setCoefficients
+// Works with setCoefficients.
 void setChunk(char* chunk, bool passedEqualSign, Coefficients* coefficients);
 // Uses coefficients to print out the equation in the "ax^2 + bx + c" format.
-void formattedCout(const Coefficients coefficients);
+void printFormattedEquation(const Coefficients coefficients);
 // Uses coefficients to solve the equations. Prints out the result.
 void solve(const Coefficients coefficients);
 // Compares doubles.
@@ -59,135 +61,133 @@ int main()
 	int inputType;
 
 
-	inputType = askPreferedInput();
-	// Запрашиваем ввод пользователя
+	inputType = askPreferredInput();
 	switch(inputType)
 	{
-	case equationInput:
+	case EQUATION_INPUT:
 		takeEquationInput(&coefficients);
 		break;
-	case coefficientInput:
+	case COEFFICIENT_INPUT:
 		takeCoefficientInput(&coefficients);
 		break;
 	default:
-		printf("Invalid input type\n");
+		printf("Invalid input type\n"); // Never happens
 		break;
 	}
 
-	// Красиво выводим
-	formattedCout(coefficients);
+	printFormattedEquation(coefficients);
 
-	// Решаем
     solve(coefficients);
 }
 
 
-int askPreferedInput()
-{
-	// Спрашиваем у пользователя желаемый вид ввода
-	printf("%s%s%s", "What type of input would you prefer?\n",
-			"(1) Coefficient input\n",
-			"(2) Equation input\n");
-	int choice = getchar();
-	if(choice == int('1'))
-		return coefficientInput;
-	else if(choice == int('2'))
-		return equationInput;
-	else
-	{
-		printf("Invalid input. But I really like the second option, so I chose it for you\n");
-		return equationInput;
-	}
+int askPreferredInput() {
+    char inputBuffer[100];  // Buffer for input
+
+    while (1) {
+        // Display the menu of choices
+        printf("What type of input would you prefer?\n"
+               "(1) Coefficient input\n"
+               "(2) Equation input\n");
+
+        // Read the user's input
+        scanf("%s", inputBuffer);
+        int choice = inputBuffer[0];  // Take the first character
+
+        // Check the user's choice and return the corresponding input type
+        if (choice == '1') {
+            return COEFFICIENT_INPUT;
+        } else if (choice == '2') {
+            return EQUATION_INPUT;
+        } else {
+            // Invalid input, inform the user and loop again
+            printf("Invalid input. Please choose 1 or 2.\n");
+        }
+    }
 }
 
 
 void takeEquationInput(Coefficients* coefficients)
 {
+    while (getchar() != '\n'); // Clear the input buffer.
 
-	// Чистим буфер
-	while(getchar() != '\n');
+    char input[MAX_INPUT_LENGTH];
+    do
+    {
+        printf("Enter your equation: ");
+        scanf("%[^\n]", input);
+        
+        if (!isCorrect(input))
+        {
+            printf("Invalid input.\n");
+            input[0] = '\n'; // Clear the input.
+            while (getchar() != '\n'); // Clear the input buffer.
+        }
+    } while (!isCorrect(input)); // Repeat until valid input is received.
 
-	// Создадим строку, в которой будет храниться ввод пользователя
-	char input[MAX_INPUT_LENGTH];
-	do
-	{
-		// Запрашивает ввод
-		printf("Enter your equation: ");
-		scanf("%[^\n]", input);
-		// Проверяем корректность ввода
-		if (!isCorrect(input))
-		{
-			printf("Invalid input.\n"); // Ругаем пользователя
-			input[0] = '\n'; // "очищаем" строку
-			while (getchar() != '\n'); // очищаем буфер
-		}
-	} while (!isCorrect(input));
+    unsigned int inputLength = strlen(input);
 
-    unsigned int inputLength = strlen(input); // длина строки
+    // Prepare the equation input.
+    normalizeEquationInput(input, &inputLength);
 
-	// Приведем к стандартному виду
-	normalizeEquationInput(input, &inputLength);
+    // Set the coefficients
+    setCoefficients(input, coefficients);
 
-	// Зададим коэффициенты
-	setCoefficients(input, coefficients);
-
-	#ifdef DEBUG
-		printf("\nDEBUG: standartised equation: %s\n", input);
+    #ifdef DEBUG
+        printf("\nDEBUG: standardized equation: %s\n", input);
         printf("DEBUG: a = %f \nDEBUG: b = %f \nDEBUG: c = %f\n\n", a, b, c);
     #endif
-
 }
 
 bool isCorrect(const char* input)
 {
     bool isListed;
 
-    // Проходим по каждому символу во входной строке.
-    for(unsigned int i = 0; i < strlen(input); i++)
+    // Iterate through the input string.
+    for (unsigned int i = 0; i < strlen(input); i++)
     {
         isListed = false;
 
-        // Проверяем, присутствует ли текущий символ среди разрешенных символов.
-        for(unsigned int j = 0; j < strlen(allowedCharacters); j++)
+        // Check if the current character is among the allowed characters.
+        for (unsigned int j = 0; j < strlen(allowedCharacters); j++)
         {
-            if(input[i] == allowedCharacters[j])
+            if (input[i] == allowedCharacters[j])
             {
                 isListed = true;
                 break;
             }
         }
 
-        // Если текущий символ не найден среди разрешенных, возвращаем false.
-        if(!isListed)
+        // If the current character is not in the allowed list, return false.
+        if (!isListed)
             return false;
     }
 
-    // Если все символы прошли проверку, возвращаем true.
+    // If all characters are among the allowed ones, return true.
     return true;
 }
 
 void deleteCharacter(char* input, unsigned int* inputLength, const char character)
 {
-	// Переменная для отслеживания текущей позиции, на которую будет перенесен следующий символ.
-	int currentEmptySpace = 0;
+    int currentEmptySpace = 0;  // Tracks the current position for the next character to be moved to.
 
-	// Проходимся по всей исходной строке.
-	for(unsigned int i = 0; i < *inputLength; i++)
-	{
-		// Если текущий символ не совпадает с символом, который нужно удалить...
-		if(input[i] != character)
-		{
-			// Переносим текущий символ на позицию текущего "пустого" места и увеличиваем его.
-			input[currentEmptySpace] = input[i];
-			currentEmptySpace++;
-		}
-	}
+    // Iterate through the input string.
+    for (unsigned int i = 0; i < *inputLength; i++)
+    {
+        // If the current character is not the character to be deleted...
+        if (input[i] != character)
+        {
+            // Move the current character to the position of the current "empty" space and increment it.
+            input[currentEmptySpace] = input[i];
+            currentEmptySpace++;
+        }
+    }
 
-	// Обновляем длину строки после удаления символов.
-	*inputLength = currentEmptySpace;
+    // Update the input length after deleting characters.
+    *inputLength = currentEmptySpace;
 
-	// Добавляем завершающий нулевой символ, чтобы строка оставалась корректной.
-	input[currentEmptySpace] = '\0';
+    // Add the null terminator to the end of the modified string to ensure it remains valid.
+    input[currentEmptySpace] = '\0';
 }
 
 void normalizeEquationInput(char* input, unsigned int* inputLength)
@@ -220,6 +220,10 @@ void normalizeEquationInput(char* input, unsigned int* inputLength)
 
 void setChunk(char* chunk, bool passedEqualSign, Coefficients* coefficients)
 {
+    // A chunk should look something like:
+
+    // +5x^2    x   -x^2    -6.5
+
     bool isA = false,
          isB = false,
          isC = false;
@@ -314,7 +318,7 @@ void setCoefficients(char* input, Coefficients* coefficients)
 }
 
 
-void formattedCout(const Coefficients coefficients)
+void printFormattedEquation(const Coefficients coefficients)
 {
 
     // Handle cases where both a and b coefficients are zero.
