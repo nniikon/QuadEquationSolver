@@ -9,5 +9,3 @@ int askPreferredInput();
 void takeInput(Coefficients* coefficients, int inputType);
 // Askes the user if they want to continue
 bool wantToContinue();
-
-

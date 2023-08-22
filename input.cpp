@@ -26,7 +26,7 @@ static void deleteCharacter(char* input, unsigned int* inputLength, const char c
 
 
 // Checks whether the characters in the input string are among the allowed characters.
-static bool isCorrect(const char* input)
+static bool isCorrect(const char* input, const char* allowedCharacters)
 {
     bool isListed;
 
@@ -191,27 +191,27 @@ static void setCoefficients(char* input, Coefficients* coefficients)
 // Prompts the user to input a single coefficient.
 static void askCoefficient(double* coef, const char name)
 {
-    int validInput = 0; // Flag to track whether the input is valid.
-
+	char buffer[MAX_CHUNK_LENGTH]; // Buffer to store user's input.
+    double validNumber = 0; // Flag to track whether the input is valid.
+	bool isValid = false;
     // A loop that keeps prompting the user until valid input is provided.
     do
     {
         printf("Please enter coefficient %c: ", name);
-        validInput = scanf("%lf", coef); // Attempt to read a double from the user's input.
+        scanf("%[^\n]", buffer); // Read a string from the user's input.
+		validNumber = atof(buffer); // Attempt to read a double from the buffer.
+		isValid = isCorrect(buffer, ALLOWED_COEFFICIENT_INPUT_CHARACTERS);
 
-        #ifdef DEBUG
-            printf("validInput: %d\nNumber %c = %f\n", validInput, name ,*coef);
-        #endif
-
-        if (validInput == 0)
+        if (!isValid)
         {
             printf("Invalid input.\n");
             while (getchar() != '\n'); // Clear the input buffer.
         }
-    } while (validInput == 0); // Continue the loop as long as the input is invalid.
 
+    } while (!isValid); // Continue the loop as long as the input is invalid.
+
+	*coef = validNumber; // Set the coefficient.
     // Clear the input buffer.
-    while (getchar() != '\n');
 }
 
 
@@ -222,7 +222,9 @@ static void takeCoefficientInput(Coefficients* coefficients)
 	while(getchar() != '\n');
 
 	askCoefficient(&(coefficients->a), 'a');
+	while (getchar() != '\n');
     askCoefficient(&(coefficients->b), 'b');
+    while (getchar() != '\n');
     askCoefficient(&(coefficients->c), 'c');
 }
 
@@ -238,13 +240,13 @@ static void takeEquationInput(Coefficients* coefficients)
         printf("Enter your equation: ");
         scanf("%[^\n]", input);
 
-        if (!isCorrect(input))
+        if (!isCorrect(input, ALLOWED_EQUATION_INPUT_CHARACTERS))
         {
             printf("Invalid input.\n");
             input[0] = '\n'; // Clear the input.
             while (getchar() != '\n'); // Clear the input buffer.
         }
-    } while (!isCorrect(input)); // Repeat until valid input is received.
+    } while (!isCorrect(input, ALLOWED_EQUATION_INPUT_CHARACTERS)); // Repeat until valid input is received.
 
     unsigned int inputLength = strlen(input);
 
@@ -262,7 +264,7 @@ static void takeEquationInput(Coefficients* coefficients)
 
 
 int askPreferredInput() {
-    char inputBuffer[100];  // Buffer for input
+    char inputBuffer[MAX_CHUNK_LENGTH];  // Buffer for input
 
     while (true) {
         // Display the menu of choices

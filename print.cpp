@@ -57,13 +57,13 @@ void printAnswers(const Answers answers)
     switch (answers.nAnswers) // Check by number of answers
     {
     case 2:
-        printf("Two real solutions were found!\n\n");
+        printf("Two real solutions were found!\n");
         printf("x1 = %g\n", answers.x1);
-        printf("x2 = %g\n", answers.x2);
+        printf("x2 = %g\n\n", answers.x2);
         break;
     case 1:
-        printf("Only one real solution was found!\n\n");
-        printf("x = %g\n", answers.x1);
+        printf("Only one real solution was found!\n");
+        printf("x = %g\n\n", answers.x1);
         break;
     case 0:
         printf("No solutions were found =[\n\n");
