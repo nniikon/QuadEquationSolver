@@ -15,7 +15,7 @@ x + 2x + 3*x = 5x^2
 // Some values to play with
 #define MAX_INPUT_LENGTH 256
 #define MAX_CHUNK_LENGTH 32
-#define EPSILON 0.0000001
+#define EPSILON 1e-10
 #define allowedCharacters "1234567890-+=xX*^., "
 // Input types
 #define COEFFICIENT_INPUT 1
@@ -37,11 +37,13 @@ typedef struct {
 
 // Prompts the user to select their preferred input type.
 int askPreferredInput();
+// Prompts the user to input coefficients based on the input type
+void takeInput(Coefficients* coefficients, int inputType);
 // Prompts the user to input coefficients and sets them in the provided structure.
 void takeCoefficientInput(Coefficients* coefficients);
 // Prompts the user to input an equation and sets the coefficients in the provided structure.
 void takeEquationInput(Coefficients* coefficients);
-// Prompts the user to imput a single coefficient.
+// Prompts the user to input a single coefficient.
 void askCoefficient(double* coef, const char name);
 // Checks whether the characters in the input string are among the allowed characters.
 bool isCorrect(const char* input);
@@ -71,18 +73,8 @@ int main()
 
 
 	inputType = askPreferredInput();
-	switch(inputType)
-	{
-	case EQUATION_INPUT:
-		takeEquationInput(&coefficients);
-		break;
-	case COEFFICIENT_INPUT:
-		takeCoefficientInput(&coefficients);
-		break;
-	default:
-		printf("Invalid input type\n"); // Never occurs.
-		break;
-	}
+
+	takeInput(&coefficients, inputType);
 
 	printFormattedEquation(coefficients);
 
@@ -95,7 +87,7 @@ int main()
 int askPreferredInput() {
     char inputBuffer[100];  // Buffer for input
 
-    while (1) {
+    while (true) {
         // Display the menu of choices
         printf("What type of input would you prefer?\n"
                "(1) Coefficient input\n"
@@ -113,10 +105,27 @@ int askPreferredInput() {
         } else {
             // Invalid input, inform the user and loop again
             printf("Invalid input. Please choose 1 or 2.\n");
+            // Clear the input buffer.
+			while (getchar() != '\n');
         }
     }
 }
 
+void takeInput(Coefficients* coefficients, int inputType)
+{
+	switch(inputType)
+	{
+	case EQUATION_INPUT:
+		takeEquationInput(coefficients);
+		break;
+	case COEFFICIENT_INPUT:
+		takeCoefficientInput(coefficients);
+		break;
+	default:
+		printf("Invalid input type\n"); // Never occurs.
+		break;
+	}
+}
 
 void takeEquationInput(Coefficients* coefficients)
 {
@@ -127,7 +136,7 @@ void takeEquationInput(Coefficients* coefficients)
     {
         printf("Enter your equation: ");
         scanf("%[^\n]", input);
-        
+
         if (!isCorrect(input))
         {
             printf("Invalid input.\n");
@@ -223,7 +232,7 @@ void normalizeEquationInput(char* input, unsigned int* inputLength)
             input[i] = '.';
             break;
 		default:
-			printf("Invalid symbol\n.");// Never occurs.
+			// do nothing
 			break;
         }
     }
@@ -331,7 +340,6 @@ void setCoefficients(char* input, Coefficients* coefficients)
 
 void printFormattedEquation(const Coefficients coefficients)
 {
-
     // Handle cases where both a and b coefficients are zero.
     if (areSameDouble(coefficients.a, 0.0) && areSameDouble(coefficients.b, 0.0))
     {
