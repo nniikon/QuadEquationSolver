@@ -9,4 +9,3 @@ g++ structs.cpp -c %COMMON_FLAGS%
 g++ doubleOperations.cpp -c %COMMON_FLAGS%
 g++ main.o solve.o input.o print.o structs.o doubleOperations.o %COMMON_FLAGS% -o KBADRATKA.exe
 cmd \k
-

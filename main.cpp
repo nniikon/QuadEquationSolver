@@ -17,6 +17,20 @@ x + 2x + 3*x = 5x^2
 
 #endif
 
+/*
+TODO:
+-1) Write TODO list;
+0) use VSCode;
+1) Change file names;
+2) Kill consts.h;
+3) Come up with an alternative for #pragma once;
+4) Try cloning assert;
+5) Use assert;
+6) Add different types of singleSolution feature;
+7) CodeStyle for commits;
+8) Fix some equation input bugs;
+9) Use Doxygen to document functions.
+*/
 
 int main()
 {

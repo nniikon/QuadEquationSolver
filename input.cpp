@@ -152,6 +152,10 @@ static bool isCorrect(char input[])
 	{
 		return false;
 	}
+	if (maxChunkLength(input) >= 32)
+	{
+		return false;
+	}
 	if (!hasOnlyAllowedCharacters(input, ALLOWED_EQUATION_INPUT_CHARACTERS))
 	{
 		return false;
@@ -420,7 +424,8 @@ bool wantToContinue()
     while (true)
 	{
 		// Clear the input buffer.
-		while (getchar() != '\n');
+		while (getchar() != '\n')
+			;
 
         printf("Do you want to solve another equation? (y/n): ");
         scanf("%[^\n]", input);
@@ -437,7 +442,6 @@ bool wantToContinue()
 				// Shouldn't occure
 				printf("ERROR. Invalid input. Please enter 'y' or 'n'.\n");
 			}
-
 		}
 		else
 		{

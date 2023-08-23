@@ -1,3 +1,4 @@
+#pragma once
 #include "structs.h"
 #include "consts.h"
 #include "doubleOperations.h"
