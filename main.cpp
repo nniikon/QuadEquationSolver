@@ -15,15 +15,17 @@ x + 2x + 3*x = 5x^2
 
 int main()
 {
+	#ifdef TEST
 	testInput();
-
+	#endif
 	Coefficients coefficients{0, 0, 0};
 	Answers answers{0, 0, 0};
 
-	int inputType = askPreferredInput();;
 
 	do
 	{
+		int inputType = askPreferredInput();
+
 		resetStructs(&coefficients, &answers);
 
 		takeInput(&coefficients, inputType);

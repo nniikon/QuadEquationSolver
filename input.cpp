@@ -94,6 +94,20 @@ bool hasSymbolsAround(char input[], char givenCharacter, char aroundCharacters[]
 }
 
 
+// Checks if the given string is correct and can be used to set coefficients
+static bool isCorrect(char input[])
+{
+	if(!hasSymbolsAround(input, ' ', ALLOWED_AROUND_SPACE_CHARACTERS))
+	{
+		return false;
+	}
+	if(!hasOnlyAllowedCharacters(input, ALLOWED_EQUATION_INPUT_CHARACTERS))
+	{
+		return false;
+	}
+	return true;
+}
+
 
 // Processes the input string, preparing it for use with the setCoefficients() function.
 static void normalizeEquationInput(char* input, unsigned int* inputLength)
@@ -280,13 +294,13 @@ static void takeEquationInput(Coefficients* coefficients)
         printf("Enter your equation: ");
         scanf("%[^\n]", input);
 
-        if (!hasOnlyAllowedCharacters(input, ALLOWED_EQUATION_INPUT_CHARACTERS))
+        if (!isCorrect(input))
         {
             printf("Invalid input.\n");
             input[0] = '\n'; // Clear the input.
             while (getchar() != '\n'); // Clear the input buffer.
         }
-    } while (!hasOnlyAllowedCharacters(input, ALLOWED_EQUATION_INPUT_CHARACTERS)); // Repeat until valid input is received.
+    } while (!isCorrect(input)); // Repeat until valid input is received.
 
     unsigned int inputLength = strlen(input);
 
