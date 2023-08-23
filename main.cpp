@@ -11,32 +11,36 @@ x + 2x + 3*x = 5x^2
 #include "printEquation.h"
 #include "solveEquation.h"
 
-#ifdef TEST
-
-	#include "test.h"
-
-#endif
 
 /*
 TODO:
 -1) Write TODO list;                             +
 0) use VSCode;                                   +
-1) Change file names;
+1) Change file names;                            +
 2) Kill consts.h;                                +
-3) Come up with an alternative for #pragma once;
+3) Come up with an alternative for #pragma once; +
+
+#if !defined(ABC)
+#define ABC
+	I was close =)
+#endif
+
 4) Try cloning assert;
 5) Use assert;
-6) Add different types of singleROOT feature;
-7) CodeStyle for commits;
+6) Add different types of singleROOT feature;    +
+7) CodeStyle for commits;                        +
 8) Fix some equation input bugs;
-9) Use Doxygen to document functions.
+9) Use Doxygen to document functions;
+10) Fix unit-tests.
 */
+#define TEST
 
 int main()
 {
+
 	#ifdef TEST
 
-	testInput();
+	testEquationInput();
 
 	#endif
 

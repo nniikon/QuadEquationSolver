@@ -315,7 +315,9 @@ static void askCoefficient(double* coef, const char name)
         if (!isValid)
         {
             printf("Invalid input.\n");
-            while (getchar() != '\n'); // Clear the input buffer.
+            // Clear the input buffer.
+            while (getchar() != '\n')
+			    ; 
         }
 
     } while (!isValid); // Continue the loop as long as the input is invalid.
@@ -329,12 +331,14 @@ static void askCoefficient(double* coef, const char name)
 static void takeCoefficientInput(Coefficients* coefficients)
 {
 	// Clean the input buffer.
-	while(getchar() != '\n');
-
+	while(getchar() != '\n')
+        ;
 	askCoefficient(&(coefficients->a), 'a');
-	while (getchar() != '\n');
+	while (getchar() != '\n')
+		;
     askCoefficient(&(coefficients->b), 'b');
-    while (getchar() != '\n');
+    while (getchar() != '\n')
+		;
     askCoefficient(&(coefficients->c), 'c');
 }
 
@@ -342,7 +346,9 @@ static void takeCoefficientInput(Coefficients* coefficients)
 // Prompts the user to input an equation and sets the coefficients in the provided structure.
 static void takeEquationInput(Coefficients* coefficients)
 {
-    while (getchar() != '\n'); // Clear the input buffer.
+    // Clear the input buffer.
+    while (getchar() != '\n')
+		; 
 
     char input[MAX_INPUT_LENGTH];
     do
@@ -354,7 +360,9 @@ static void takeEquationInput(Coefficients* coefficients)
         {
             printf("Invalid input.\n");
             input[0] = '\n'; // Clear the input.
-            while (getchar() != '\n'); // Clear the input buffer.
+            // Clear the input buffer.
+            while (getchar() != '\n')
+			    ; 
         }
     } while (!isCorrect(input)); // Repeat until valid input is received.
 
@@ -395,7 +403,8 @@ int askPreferredInput() {
             // Invalid input, inform the user and loop again
             printf("Invalid input. Please choose 1 or 2.\n");
             // Clear the input buffer.
-			while (getchar() != '\n');
+			while (getchar() != '\n')
+			    ;
         }
     }
 }
@@ -447,7 +456,49 @@ bool wantToContinue()
 		{
 			printf("Invalid input. Please enter 'y' or 'n'.\n");
 		}
-
     }
 }
 
+// Compares the output of the program's equation solver with expected coefficients.
+static void testSingleEquationInput(char input[], Coefficients coefficientsRef) 
+{
+    static int counter = 1;
+    Coefficients coefficients = {0, 0, 0};
+    
+    if (isCorrect(input)) 
+    {
+        size_t len = strlen(input);
+
+        // Do everything that EquationInput would do.
+        normalizeEquationInput(input, &len);
+        setCoefficients(input, &coefficients);
+        
+        // Compare with the expected values.
+        if (areSameDouble(coefficients.a, coefficientsRef.a) &&
+            areSameDouble(coefficients.b, coefficientsRef.b) &&
+            areSameDouble(coefficients.c, coefficientsRef.c)) 
+        {
+            printf("EquationInput Test %d passed.\n", counter);
+        }
+        else 
+        {
+            printf("\nEquationInput TEST FAILED.\n");
+            printf("Input value: %s\n", input);
+            printf("a = %g, expected a = %g\n", coefficients.a, coefficientsRef.a);
+            printf("b = %g, expected b = %g\n", coefficients.b, coefficientsRef.b);
+            printf("c = %g, expected c = %g\n", coefficients.c, coefficientsRef.c);
+        }
+    }
+    counter++;
+}
+
+// Function to test equation input handling.
+void testEquationInput() 
+{
+    char equation1[] = "x^2 - 5x + 12 = -x^2 - x + 5";
+    testSingleEquationInput(equation1, (Coefficients){2, -4, 7});
+    char equation2[] = "x^2 - x^2 = x - x + 1.23";
+    testSingleEquationInput(equation2, (Coefficients){0, 0, -1.23});
+    char equation3[] = "5x^2 - 2x^2 = 6.43x - 5.43x + 1.11";
+    testSingleEquationInput(equation3, (Coefficients){3, -1, -1.11});
+}

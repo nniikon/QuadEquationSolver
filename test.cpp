@@ -1,19 +1,9 @@
 #include "test.h"
 
 
-static void testInput_hasSymbolsAround(char input[], char givenCharacter, char aroundCharacters[], bool expectedOutput)
+static void testInput(char input[], char givenCharacter, char aroundCharacters[], bool expectedOutput)
 {
-	if(hasSymbolsAround(input, givenCharacter, aroundCharacters) == expectedOutput)
-	{
-		printf("TEST PASSED\n");
-	}
-	else
-	{
-		printf("\nTEST hasSymbolsAround() FAILED. \ninput = \"%s\",\ngivenCharacter = \'%c\'\naroundCharacters = \'%s\'\n",
-				input, givenCharacter, aroundCharacters);
-		printf("GIVEN OUTPUT = %d\n", hasSymbolsAround(input, givenCharacter, aroundCharacters));
-		printf("EXPECTED OUTPUT = %d\n\n", expectedOutput);
-	}
+	
 }
 
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "equationParams.h"
+#include "doubleOperations.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,3 +29,5 @@ int askPreferredInput();
 void takeInput(Coefficients* coefficients, int inputType);
 // Askes the user if they want to continue.
 bool wantToContinue();
+// Tests equation input
+void testEquationInput();
