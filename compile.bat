@@ -7,5 +7,6 @@ g++ printEquation.cpp -c %COMMON_FLAGS%
 g++ solveEquation.cpp -c %COMMON_FLAGS%
 g++ equationParams.cpp -c %COMMON_FLAGS%
 g++ doubleOperations.cpp -c %COMMON_FLAGS%
-g++ main.o solveEquation.o inputCoefficients.o printEquation.o equationParams.o doubleOperations.o %COMMON_FLAGS% -o KBADRATKA.exe
+g++ test.cpp -c %COMMON_FLAGS%
+g++ main.o solveEquation.o inputCoefficients.o printEquation.o equationParams.o doubleOperations.o test.o %COMMON_FLAGS% -o KBADRATKA.exe
 cmd \k

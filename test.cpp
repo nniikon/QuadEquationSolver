@@ -1,23 +1,64 @@
 #include "test.h"
 
-
-static void testInput(char input[], char givenCharacter, char aroundCharacters[], bool expectedOutput)
+static void testSingleSolve(Coefficients coefficients, Answers answersRef)
 {
-	
+	static int counter = 1;
+	Answers answers = {0, 0, 0};
+
+	solve(coefficients, &answers);
+
+	// Two roots
+	if (answersRef.answerType == TWO_ROOTS)
+	{
+		if (answersRef.answerType == answers.answerType &&
+			areSameDouble(answersRef.x1, answers.x1) &&
+			areSameDouble(answersRef.x2, answers.x2) )
+		{
+			printf("Solve Test %d passed\n", counter);
+		} 
+		else
+		{
+			printf("SOLVE TEST %d FAILED\n", counter);
+			printf("x1 = %g\nx2 = %g\n", answers.x1, answers.x2);
+			printf("Expected x1 = %g\nExpected x2 = %g\n", answersRef.x1, answersRef.x2);
+		}
+	}
+	// One root
+	else if (answersRef.answerType == ONE_ROOT || answersRef.answerType == ONE_DOUBLE_ROOT)
+	{
+		if (answersRef.answerType == answers.answerType &&
+			areSameDouble(answersRef.x1, answers.x1) )
+		{
+			printf("Solve Test %d passed\n", counter);
+		} 
+		else
+		{
+			printf("SOLVE TEST %d FAILED\n", counter);
+			printf("x1 = %g\n", answers.x1);
+			printf("Expected x1 = %g\n", answersRef.x1);
+		}
+	}
+	// No roots
+	else
+	{
+		if (answersRef.answerType == answers.answerType)
+		{
+			printf("Solve Test %d passed\n", counter);
+		} 
+		else
+		{
+			printf("SOLVE TEST %d FAILED\n", counter);
+		}
+	}
+	counter++;
 }
 
-
-void testInput()
+void testSolve()
 {
-	char givenCharacter = ' ';
-	char aroundCharacters[100] = "+-*=";
-	char input1[100] = "123 234";
-	testInput_hasSymbolsAround(input1, givenCharacter, aroundCharacters, false);
-	char input2[100] = "x^2 - 5x + 12 = 0";
-	testInput_hasSymbolsAround(input2, givenCharacter, aroundCharacters, true);
-	char input3[100] = "x^2 - 5x + 12 = x - 15 ";
-	testInput_hasSymbolsAround(input3, givenCharacter, aroundCharacters, true);
-	char input4[100] = "x^2 - 5x + 12 = x - 15 20";
-	testInput_hasSymbolsAround(input4, givenCharacter, aroundCharacters, false);
+	testSingleSolve({3, -5, 2}, {1.0, 0.66666666666666, TWO_ROOTS});
+	testSingleSolve({10, -5, -5}, {1.0, -0.5, TWO_ROOTS});
+	testSingleSolve({1, 2, 1}, {-1.0, 0, ONE_DOUBLE_ROOT});
+	testSingleSolve({1, -2, 1}, {1.0, 0, ONE_DOUBLE_ROOT});
+	testSingleSolve({0, 1, 1}, {-1.0, 0, ONE_ROOT});
+	testSingleSolve({0, 5, -1}, {0.2, 0, ONE_ROOT});
 }
-

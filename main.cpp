@@ -7,10 +7,10 @@ x - 6 = 5x + 3
 x + 2x + 3*x = 5x^2
 */
 
+#include "test.h"
 #include "inputCoefficients.h"
 #include "printEquation.h"
 #include "solveEquation.h"
-
 
 /*
 TODO:
@@ -33,15 +33,15 @@ TODO:
 9) Use Doxygen to document functions;
 10) Fix unit-tests.
 */
-#define TEST
+
+//#define TEST
 
 int main()
 {
 
 	#ifdef TEST
-
-	testEquationInput();
-
+		testEquationInput();
+		testSolve();
 	#endif
 
 	Coefficients coefficients{0, 0, 0};
@@ -49,7 +49,6 @@ int main()
 
 	do
 	{
-
 		int inputType = askPreferredInput();
 
 		resetStructs(&coefficients, &answers);

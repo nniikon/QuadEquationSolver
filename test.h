@@ -1,6 +1,6 @@
 #pragma once
-#include "inputCoefficients.h"
+#include "solveEquation.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-void testInput();
+void testSolve();
