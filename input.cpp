@@ -56,7 +56,7 @@ static bool hasOnlyAllowedCharacters(const char* input, const char* allowedChara
 }
 
 
-// Checks if the given character has
+// Checks if the given string has the character in it.
 static bool hasCharacterInString(char character, const char input[])
 {
     for (size_t i = 0; i < strlen(input); i++)
@@ -94,6 +94,52 @@ static bool hasSymbolsAround(char input[], char givenCharacter, const char aroun
 }
 
 
+// Returns true if every given character in the string doens't have restricted characters around.
+static bool hasRestrictedSymbolsAround(char input[], char givenCharacter, const char aroundCharacters[])
+{
+	for(size_t i = 0; i < strlen(input) - 1; i++)
+	{
+		if(input[i] == givenCharacter)
+		{
+			// Check if the symbol is to the left.
+			bool isToTheLeft = (i >= 1) && hasCharacterInString(input[i - 1], aroundCharacters);
+
+			// Check if the symbol is to the right.
+			bool isToTheRight = hasCharacterInString(input[i + 1], aroundCharacters);
+
+			// If its neither to the left nor to the right...
+			if (isToTheLeft || isToTheRight)
+			{
+				return false; // FAIL
+			}
+		}
+	}
+	return true;
+}
+
+
+// Calculates length of the langest chunk in the given string
+static int maxChunkLength(const char* input)
+{
+	int strSize = 0;
+	int maxSize = 0;
+	// Iterate through the input string
+	for (size_t i = 0; i < strlen(input); i++)
+	{
+		strSize++;
+
+		if (hasCharacterInString(input[i], DELIMITER)) // If it hits a delimiter...
+		{
+			if (strSize > maxSize)
+				maxSize = strSize;
+
+			strSize = 0; // Reset the size
+		}
+	}
+	return maxSize;
+}
+
+
 // Checks if the given string is correct and can be used to set coefficients
 static bool isCorrect(char input[])
 {
@@ -101,10 +147,10 @@ static bool isCorrect(char input[])
 	{
 		return false;
 	}
-	if (hasSymbolsAround(input, 'x', RESTRICTED_AROUND_X_CHARACTERS) ||
-	    hasSymbolsAround(input, 'X', RESTRICTED_AROUND_X_CHARACTERS)   )
+	if (!( hasRestrictedSymbolsAround(input, 'x', RESTRICTED_AROUND_X_CHARACTERS) &&
+	       hasRestrictedSymbolsAround(input, 'X', RESTRICTED_AROUND_X_CHARACTERS) )  )
 	{
-		//return false;
+		return false;
 	}
 	if (!hasOnlyAllowedCharacters(input, ALLOWED_EQUATION_INPUT_CHARACTERS))
 	{
@@ -112,6 +158,7 @@ static bool isCorrect(char input[])
 	}
 	return true;
 }
+
 
 
 // Processes the input string, preparing it for use with the setCoefficients() function.
@@ -227,7 +274,7 @@ static void setCoefficients(char* input, Coefficients* coefficients)
     for (int i = 0; i <= len; i++)
     {
         // If a delimiter is encountered (+, -, =, \0)
-        if (input[i] == '+' || input[i] == '-' || input[i] == '=' || input[i] == '\0')
+        if (input[i] == '\0' || hasCharacterInString(input[i], DELIMITER))
         {
             strChunk[chunkCounter] = '\0';  // Terminate the string in the buffer
             chunkCounter = 0;  // Reset the counter for the next chunk
