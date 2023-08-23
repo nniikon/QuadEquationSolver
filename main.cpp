@@ -11,7 +11,7 @@ x + 2x + 3*x = 5x^2
 #include "inputCoefficients.h"
 #include "printEquation.h"
 #include "solveEquation.h"
-
+#include <iostream>
 /*
 TODO:
 -1) Write TODO list;                             +
@@ -34,11 +34,10 @@ TODO:
 10) Fix unit-tests.
 */
 
-//#define TEST
+#define TEST
 
 int main()
 {
-
 	#ifdef TEST
 		testEquationInput();
 		testSolve();

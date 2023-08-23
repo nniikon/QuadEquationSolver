@@ -55,10 +55,10 @@ static void testSingleSolve(Coefficients coefficients, Answers answersRef)
 
 void testSolve()
 {
-	testSingleSolve({3, -5, 2}, {1.0, 0.66666666666666, TWO_ROOTS});
-	testSingleSolve({10, -5, -5}, {1.0, -0.5, TWO_ROOTS});
-	testSingleSolve({1, 2, 1}, {-1.0, 0, ONE_DOUBLE_ROOT});
-	testSingleSolve({1, -2, 1}, {1.0, 0, ONE_DOUBLE_ROOT});
-	testSingleSolve({0, 1, 1}, {-1.0, 0, ONE_ROOT});
-	testSingleSolve({0, 5, -1}, {0.2, 0, ONE_ROOT});
+	testSingleSolve((Coefficients) {3, -5, 2},  (Answers) {1.0, 0.66666666666666, TWO_ROOTS});
+	testSingleSolve((Coefficients) {10, -5, -5},(Answers) {1.0, -0.5, TWO_ROOTS});
+	testSingleSolve((Coefficients) {1, 2, 1},   (Answers) {-1.0, 0, ONE_DOUBLE_ROOT});
+	testSingleSolve((Coefficients) {1, -2, 1},  (Answers) {1.0, 0, ONE_DOUBLE_ROOT});
+	testSingleSolve((Coefficients) {0, 1, 1},   (Answers) {-1.0, 0, ONE_ROOT});
+	testSingleSolve((Coefficients) {0, 5, -1},  (Answers) {0.2, 0, ONE_ROOT});
 }

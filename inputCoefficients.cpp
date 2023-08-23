@@ -302,7 +302,7 @@ static void setCoefficients(char* input, Coefficients* coefficients)
 static void askCoefficient(double* coef, const char name)
 {
 	char buffer[MAX_CHUNK_LENGTH]; // Buffer to store user's input.
-    double validNumber = 0; // Flag to track whether the input is valid.
+    double validNumber = 0;
 	bool isValid = false;
     // A loop that keeps prompting the user until valid input is provided.
     do
@@ -333,24 +333,27 @@ static void takeCoefficientInput(Coefficients* coefficients)
 	// Clean the input buffer.
 	while(getchar() != '\n')
         ;
+
 	askCoefficient(&(coefficients->a), 'a');
+
 	while (getchar() != '\n')
 		;
+
     askCoefficient(&(coefficients->b), 'b');
+
     while (getchar() != '\n')
 		;
+
     askCoefficient(&(coefficients->c), 'c');
 }
 
 
-// Prompts the user to input an equation and sets the coefficients in the provided structure.
-static void takeEquationInput(Coefficients* coefficients)
+static void getEquationInput(char input[])
 {
     // Clear the input buffer.
     while (getchar() != '\n')
 		; 
 
-    char input[MAX_INPUT_LENGTH];
     do
     {
         printf("Enter your equation: ");
@@ -360,12 +363,17 @@ static void takeEquationInput(Coefficients* coefficients)
         {
             printf("Invalid input.\n");
             input[0] = '\n'; // Clear the input.
+
             // Clear the input buffer.
             while (getchar() != '\n')
 			    ; 
         }
     } while (!isCorrect(input)); // Repeat until valid input is received.
+}
 
+
+void setEquationInput(Coefficients* coefficients, char input[])
+{
     unsigned int inputLength = strlen(input);
 
     // Prepare the equation input.
@@ -407,6 +415,14 @@ int askPreferredInput() {
 			    ;
         }
     }
+}
+
+
+static void takeEquationInput(Coefficients* coefficients)
+{
+    char input[MAX_INPUT_LENGTH];
+    getEquationInput(input);
+    setEquationInput(coefficients, input);
 }
 
 
@@ -491,6 +507,7 @@ static void testSingleEquationInput(char input[], Coefficients coefficientsRef)
     }
     counter++;
 }
+
 
 // Function to test equation input handling.
 void testEquationInput() 
