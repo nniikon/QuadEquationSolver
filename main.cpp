@@ -11,12 +11,16 @@ x + 2x + 3*x = 5x^2
 #include "print.h"
 #include "solve.h"
 
+#include "test.h"
+
 int main()
 {
-		Coefficients coefficients{0, 0, 0};
-		Answers answers{0, 0, 0};
+	testInput();
 
-		int inputType = askPreferredInput();;
+	Coefficients coefficients{0, 0, 0};
+	Answers answers{0, 0, 0};
+
+	int inputType = askPreferredInput();;
 
 	do
 	{

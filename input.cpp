@@ -27,7 +27,7 @@ static void deleteCharacter(char* input, unsigned int* inputLength, const char c
 
 
 // Checks whether the characters in the input string are among the allowed characters.
-static bool isCorrect(const char* input, const char* allowedCharacters)
+static bool hasOnlyAllowedCharacters(const char* input, const char* allowedCharacters)
 {
     bool isListed;
 
@@ -54,6 +54,45 @@ static bool isCorrect(const char* input, const char* allowedCharacters)
     // If all characters are among the allowed ones, return true.
     return true;
 }
+
+
+// Checks if the given character has
+static bool hasCharacterInString(char character, char input[])
+{
+    for (size_t i = 0; i < strlen(input); i++)
+	{
+        if (character == input[i])
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+// Checks that every given character in the string has one of the other given characters around.
+bool hasSymbolsAround(char input[], char givenCharacter, char aroundCharacters[])
+{
+	for(size_t i = 0; i < strlen(input) - 1; i++)
+	{
+		if(input[i] == givenCharacter)
+		{
+			// Check if the symbol is to the left.
+			bool isToTheLeft = (i >= 1) && hasCharacterInString(input[i - 1], aroundCharacters);
+
+			// Check if the symbol is to the right.
+			bool isToTheRight = hasCharacterInString(input[i + 1], aroundCharacters);
+
+			// If its neither to the left nor to the right...
+			if (!(isToTheLeft || isToTheRight))
+			{
+				return false; // FAIL
+			}
+		}
+	}
+	return true;
+}
+
 
 
 // Processes the input string, preparing it for use with the setCoefficients() function.
@@ -201,7 +240,7 @@ static void askCoefficient(double* coef, const char name)
         printf("Please enter coefficient %c: ", name);
         scanf("%[^\n]", buffer); // Read a string from the user's input.
 		validNumber = atof(buffer); // Attempt to read a double from the buffer.
-		isValid = isCorrect(buffer, ALLOWED_COEFFICIENT_INPUT_CHARACTERS);
+		isValid = hasOnlyAllowedCharacters(buffer, ALLOWED_COEFFICIENT_INPUT_CHARACTERS);
 
         if (!isValid)
         {
@@ -241,13 +280,13 @@ static void takeEquationInput(Coefficients* coefficients)
         printf("Enter your equation: ");
         scanf("%[^\n]", input);
 
-        if (!isCorrect(input, ALLOWED_EQUATION_INPUT_CHARACTERS))
+        if (!hasOnlyAllowedCharacters(input, ALLOWED_EQUATION_INPUT_CHARACTERS))
         {
             printf("Invalid input.\n");
             input[0] = '\n'; // Clear the input.
             while (getchar() != '\n'); // Clear the input buffer.
         }
-    } while (!isCorrect(input, ALLOWED_EQUATION_INPUT_CHARACTERS)); // Repeat until valid input is received.
+    } while (!hasOnlyAllowedCharacters(input, ALLOWED_EQUATION_INPUT_CHARACTERS)); // Repeat until valid input is received.
 
     unsigned int inputLength = strlen(input);
 
@@ -321,7 +360,7 @@ bool wantToContinue()
         scanf("%[^\n]", input);
 
         // Check if the input is correct
-		if(isCorrect(input, ALLOWED_CONTINUE_INPUT_CHARACTERS) && strlen(input) == 1)
+		if(hasOnlyAllowedCharacters(input, ALLOWED_CONTINUE_INPUT_CHARACTERS) && strlen(input) == 1)
 		{
 			if (input[0] == 'y' || input[0] == 'Y')
 				return true;
