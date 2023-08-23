@@ -1,6 +1,7 @@
 #include "print.h"
 void printFormattedEquation(const Coefficients coefficients)
 {
+	// Careful govnokod
     // Handle cases where both a and b coefficients are zero.
     if (areSameDouble(coefficients.a, 0.0) && areSameDouble(coefficients.b, 0.0))
     {
@@ -25,8 +26,10 @@ void printFormattedEquation(const Coefficients coefficients)
     // b coefficient.
     if (!areSameDouble(coefficients.b, 0.0))
     {
-        if (coefficients.b < 0)
+        if (coefficients.b < 0 && !areSameDouble(coefficients.a, 0.0))
             printf("- ");
+		else if (coefficients.b < 0 && areSameDouble(coefficients.a, 0.0))
+			printf("-");
         else if (!areSameDouble(coefficients.a, 0.0))
             printf("+ ");
 
