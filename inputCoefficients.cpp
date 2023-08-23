@@ -1,4 +1,4 @@
-#include "input.h"
+#include "inputCoefficients.h"
 
 // Removes occurrences of a specified character from the given string.
 static void deleteCharacter(char* input, unsigned int* inputLength, const char character)

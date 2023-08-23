@@ -7,9 +7,9 @@ x - 6 = 5x + 3
 x + 2x + 3*x = 5x^2
 */
 
-#include "input.h"
-#include "print.h"
-#include "solve.h"
+#include "inputCoefficients.h"
+#include "printEquation.h"
+#include "solveEquation.h"
 
 #ifdef TEST
 
@@ -19,10 +19,10 @@ x + 2x + 3*x = 5x^2
 
 /*
 TODO:
--1) Write TODO list;
-0) use VSCode;
+-1) Write TODO list;                             +
+0) use VSCode;                                   +
 1) Change file names;
-2) Kill consts.h;
+2) Kill consts.h;                                +
 3) Come up with an alternative for #pragma once;
 4) Try cloning assert;
 5) Use assert;

@@ -1,4 +1,4 @@
-#include "print.h"
+#include "printEquation.h"
 void printFormattedEquation(const Coefficients coefficients)
 {
 	// Careful govnokod

@@ -1,4 +1,4 @@
-#include "structs.h"
+#include "equationParams.h"
 
 void resetStructs(Coefficients* coefficients, Answers* answers)
 {
