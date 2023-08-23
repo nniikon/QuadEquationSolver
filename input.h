@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "structs.h"
-#include "consts.h"
 
 
 // Characters that are allowed to be used in different types of interactions with the user.

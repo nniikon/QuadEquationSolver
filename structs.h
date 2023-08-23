@@ -8,11 +8,17 @@ typedef struct {
 typedef struct {
     double x1;
     double x2;
-    int nAnswers; // Number of answers.
+    int answerType; // Number of answers.
 } Answers;
 
-// Infinite number of solutions.
-// "K O C T bl Jl b" fix asap
-const int INF = 100;
+
+enum ANSWERS_TYPES 
+{
+    NO_ROOTS,
+    ONE_ROOT,
+    ONE_DOUBLE_ROOT,
+    TWO_ROOTS,
+    INF_ROOTS,
+};
 
 void resetStructs(Coefficients* coefficients, Answers* answers);

@@ -1,6 +1,5 @@
 #pragma once
 #include <math.h>
-#include "consts.h"
 
 
 const double EPSILON = 1e-10;

@@ -1,6 +1,5 @@
 #pragma once
 #include "structs.h"
-#include "consts.h"
 #include "doubleOperations.h"
 #include <math.h>
 #include <stdio.h>

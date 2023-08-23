@@ -57,25 +57,29 @@ void printFormattedEquation(const Coefficients coefficients)
 
 void printAnswers(const Answers answers)
 {
-    switch (answers.nAnswers) // Check by number of answers
+    switch (answers.answerType) // Check by number of answers
     {
-    case 2:
-        printf("Two real solutions were found!\n");
+    case TWO_ROOTS:
+        printf("Two real roots were found!\n");
         printf("x1 = %g\n", answers.x1);
         printf("x2 = %g\n\n", answers.x2);
         break;
-    case 1:
-        printf("Only one real solution was found!\n");
+    case ONE_ROOT:
+        printf("Only one real root was found!\n");
         printf("x = %g\n\n", answers.x1);
         break;
-    case 0:
-        printf("No solutions were found =[\n\n");
+    case ONE_DOUBLE_ROOT:
+        printf("One real repeated root was found!\n");
+        printf("x = %g\n\n", answers.x1);
         break;
-    case INF:
-        printf("An infinite number of solutions were found!\n\n");
+    case NO_ROOTS:
+        printf("No ROOTs were found =[\n\n");
+        break;
+    case INF_ROOTS:
+        printf("An infinite number of ROOTs were found!\n\n");
         break;
     default:
-        printf("Invalid amount of solutions\n\n"); // Never occurs.
+        printf("Invalid amount of ROOTs\n\n"); // Never occurs.
         break;
     }
 }

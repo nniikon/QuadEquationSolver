@@ -26,7 +26,7 @@ TODO:
 3) Come up with an alternative for #pragma once;
 4) Try cloning assert;
 5) Use assert;
-6) Add different types of singleSolution feature;
+6) Add different types of singleROOT feature;
 7) CodeStyle for commits;
 8) Fix some equation input bugs;
 9) Use Doxygen to document functions.

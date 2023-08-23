@@ -1,7 +1,6 @@
 #pragma once
 #include <math.h>
 #include "doubleOperations.h"
-#include "consts.h"
 #include "structs.h"
 
 // Uses coefficients to solve the equations.
