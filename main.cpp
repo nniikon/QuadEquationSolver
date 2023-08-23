@@ -13,12 +13,10 @@ x + 2x + 3*x = 5x^2
 
 int main()
 {
-
 		Coefficients coefficients{0, 0, 0};
 		Answers answers{0, 0, 0};
-		int inputType;
 
-		inputType = askPreferredInput();
+		int inputType = askPreferredInput();;
 
 	do
 	{
@@ -34,6 +32,3 @@ int main()
 
 	} while(wantToContinue());
 }
-
-
-

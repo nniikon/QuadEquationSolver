@@ -3,7 +3,8 @@
 // Removes occurrences of a specified character from the given string.
 static void deleteCharacter(char* input, unsigned int* inputLength, const char character)
 {
-    int currentEmptySpace = 0;  // Tracks the current position for the next character to be moved to.
+	// Tracks the current position for the next character to be moved to.
+    int currentEmptySpace = 0;
 
     // Iterate through the input string.
     for (unsigned int i = 0; i < *inputLength; i++)
@@ -308,24 +309,36 @@ void takeInput(Coefficients* coefficients, int inputType)
 }
 
 
-bool wantToContinue() {
-    char input;
-    while (true) {
+bool wantToContinue()
+{
+    char input[MAX_CHUNK_LENGTH];
+    while (true)
+	{
 		// Clear the input buffer.
 		while (getchar() != '\n');
 
         printf("Do you want to solve another equation? (y/n): ");
-        scanf("%c", &input);
+        scanf("%[^\n]", input);
 
-        if (input == 'y' || input == 'Y')
-            return true;
-        else if (input == 'n' || input == 'N')
-            return false;
-         else
-		 {
-            printf("Invalid input. Please enter 'y' or 'n'.\n");
+        // Check if the input is correct
+		if(isCorrect(input, ALLOWED_CONTINUE_INPUT_CHARACTERS) && strlen(input) == 1)
+		{
+			if (input[0] == 'y' || input[0] == 'Y')
+				return true;
+			else if (input[0] == 'n' || input[0] == 'N')
+				return false;
+			else
+			{
+				// Shouldn't occure
+				printf("ERROR. Invalid input. Please enter 'y' or 'n'.\n");
+			}
 
-		 }
+		}
+		else
+		{
+			printf("Invalid input. Please enter 'y' or 'n'.\n");
+		}
+
     }
 }
 
