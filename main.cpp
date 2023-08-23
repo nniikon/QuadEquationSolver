@@ -11,19 +11,27 @@ x + 2x + 3*x = 5x^2
 #include "print.h"
 #include "solve.h"
 
-#include "test.h"
+#ifdef TEST
+
+	#include "test.h"
+
+#endif
+
 
 int main()
 {
 	#ifdef TEST
+
 	testInput();
+
 	#endif
+
 	Coefficients coefficients{0, 0, 0};
 	Answers answers{0, 0, 0};
 
-
 	do
 	{
+
 		int inputType = askPreferredInput();
 
 		resetStructs(&coefficients, &answers);

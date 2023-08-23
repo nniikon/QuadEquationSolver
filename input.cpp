@@ -57,7 +57,7 @@ static bool hasOnlyAllowedCharacters(const char* input, const char* allowedChara
 
 
 // Checks if the given character has
-static bool hasCharacterInString(char character, char input[])
+static bool hasCharacterInString(char character, const char input[])
 {
     for (size_t i = 0; i < strlen(input); i++)
 	{
@@ -70,8 +70,8 @@ static bool hasCharacterInString(char character, char input[])
 }
 
 
-// Checks that every given character in the string has one of the other given characters around.
-bool hasSymbolsAround(char input[], char givenCharacter, char aroundCharacters[])
+// Returns true if every given character in the string has at least one of the other given characters around.
+static bool hasSymbolsAround(char input[], char givenCharacter, const char aroundCharacters[])
 {
 	for(size_t i = 0; i < strlen(input) - 1; i++)
 	{
@@ -97,11 +97,16 @@ bool hasSymbolsAround(char input[], char givenCharacter, char aroundCharacters[]
 // Checks if the given string is correct and can be used to set coefficients
 static bool isCorrect(char input[])
 {
-	if(!hasSymbolsAround(input, ' ', ALLOWED_AROUND_SPACE_CHARACTERS))
+	if (!hasSymbolsAround(input, ' ', ALLOWED_AROUND_SPACE_CHARACTERS))
 	{
 		return false;
 	}
-	if(!hasOnlyAllowedCharacters(input, ALLOWED_EQUATION_INPUT_CHARACTERS))
+	if (hasSymbolsAround(input, 'x', RESTRICTED_AROUND_X_CHARACTERS) ||
+	    hasSymbolsAround(input, 'X', RESTRICTED_AROUND_X_CHARACTERS)   )
+	{
+		//return false;
+	}
+	if (!hasOnlyAllowedCharacters(input, ALLOWED_EQUATION_INPUT_CHARACTERS))
 	{
 		return false;
 	}
