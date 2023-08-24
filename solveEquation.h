@@ -3,7 +3,11 @@
  * @brief This file contains function that solves the quadratic, linear, or constant equation based on the given coefficients.
  *
  */
-#pragma once
+
+#ifndef SOLVE_EQUATION_H
+#define SOLVE_EQUATION_H
+
+
 #include "doubleOperations.h"
 #include "equationParams.h"
 #include <math.h>
@@ -19,3 +23,5 @@
  * @todo                     Change input to constant pointer instead of the constant structure. 
  */
 void solve(const Coefficients coefficients, Answers* answers);
+
+#endif

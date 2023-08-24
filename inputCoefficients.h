@@ -1,15 +1,17 @@
-#pragma once
+/**
+ * @file inputCoefficients.h
+ * @brief This file contains functions and constants 
+ */
+
+#ifndef INPUT_COEFFICIENTS_H
+#define INPUT_COEFFICIENTS_H
+
 #include "equationParams.h"
 #include "doubleOperations.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-/**
- * @file inputCoefficients.h
- * @brief This file contains functions and constants 
- * 
- */
 
 /**
  * @brief Enumerates the possible types of user input.
@@ -22,7 +24,7 @@ enum INPUT_TYPE {
 /**
  * @brief Prompts the user to select their preferred input type.
  * 
- * @return The selected input type.
+ * @return The selected `INPUT_TYPE`.
  */
 int askPreferredInput();
 
@@ -46,7 +48,10 @@ bool wantToContinue();
  * 
  * This function sets the coefficients in the provided structure based on the provided input.
  * 
- * @param [out] coefficients Pointer to the Coefficients structure where coefficients will be stored.
+ * @param [out] coefficients Pointer to the `Coefficients` structure where coefficients will be stored.
  * @param [in] input The input string representing the equation.
+ * 
  */
 void equationInputToCoefficients(Coefficients* coefficients, char input[]);
+
+#endif

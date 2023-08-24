@@ -3,7 +3,9 @@
  * @brief This file defines a test suite for the equation solver and coefficient input functions.
  */
 
-#pragma once
+#ifndef TEST_H
+#define TEST_H
+
 #include "solveEquation.h"
 #include "inputCoefficients.h"
 #include "assert.h"
@@ -21,16 +23,16 @@ struct SolveTestData {
 };
 
 /**
- * @brief Tests solve() via hardcoded tests and prints out the results. 
+ * @brief Tests `solve()` via hardcoded tests and prints out the results. 
  * 
- * Takes the hardcoded tests data from the solveTestData[].
+ * Takes the hardcoded tests data from the `solveTestData[]`.
  */
 void testSolve();
 
 /**
- * @brief Tests equationInput() via hardcoded tests and prints out the results. 
+ * @brief Tests `equationInput()` via hardcoded tests and prints out the results. 
  * 
  */
 void testEquationInput();
 
-
+#endif

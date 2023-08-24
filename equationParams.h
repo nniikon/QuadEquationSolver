@@ -1,9 +1,10 @@
-#pragma once
-
 /**
  * @file equationParams.h
  * @brief This file defines the structures for coefficients and answers of an equation, along with associated constants and functions.
  */
+
+#ifndef EQUATION_PARAMS_H
+#define EQUATION_PARAMS_H
 
 /**
  * @struct Coefficients
@@ -46,3 +47,5 @@ enum ANSWERS_TYPES {
  * @param [in,out] answers      Pointer to the Answers structure to be reset.
  */
 void resetStructs(Coefficients* coefficients, Answers* answers);
+
+#endif

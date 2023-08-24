@@ -1,13 +1,16 @@
-#pragma once
+/**
+ * @file printEquation.h
+ * @brief This file contains functions to print equation-related information.
+ */
+
+#ifndef PRINT_EQUATION_H
+#define PRINT_EQUATION_H
+
 #include "equationParams.h"
 #include "doubleOperations.h"
 #include <math.h>
 #include <stdio.h>
 
-/**
- * @file printEquation.h
- * @brief This file contains functions to print equation-related information.
- */
 
 /**
  * @brief Prints out the answers of the equation.
@@ -30,3 +33,5 @@ void printAnswers(const Answers answers);
  * @todo Change input to constant pointer instead of the structure. 
  */
 void printFormattedEquation(const Coefficients coefficients);
+
+#endif
