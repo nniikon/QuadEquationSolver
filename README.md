@@ -1,7 +1,7 @@
 # QuadEquationSolver
 **A simple program in C that can solve up to quadratic equations.**
 <p align='center'>
-    <img src="./gifs/giphy.gif" alt="drawing" width="200"/>
+    <img src="./media/giphy.gif" alt="drawing" width="200"/>
 </p>
 
 # Installation
@@ -18,7 +18,7 @@ Now the only thing left to do is to run KBADRATKA.exe
 
 # Usage 
 
-Now you can start the program!
+Now you can start your program!
 
 ```
 .\KBADRATKA.exe
@@ -39,3 +39,6 @@ Two real roots were found!
 x1 = -2.94374
 x2 = 1.44374
 ```
+<p align='center'>
+    <img src="./media/userHelp.jpg" alt="drawing" width="800"/>
+</p>
