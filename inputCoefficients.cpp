@@ -124,11 +124,11 @@ static int maxChunkLength(const char* input)
 	int strSize = 0;
 	int maxSize = 0;
 	// Iterate through the input string
-	for (size_t i = 0; i < strlen(input); i++)
+	for (size_t i = 0; i <= strlen(input); i++)
 	{
 		strSize++;
 
-		if (hasCharacterInString(input[i], DELIMITER)) // If it hits a delimiter...
+		if (input[i] == '\0' || hasCharacterInString(input[i], DELIMITER)) // If it hits a delimiter...
 		{
 			if (strSize > maxSize)
 				maxSize = strSize;
