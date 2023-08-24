@@ -1,5 +1,20 @@
 #include "inputCoefficients.h"
 
+// Characters that are allowed to be used in different types of interactions with the user.
+static const char* const ALLOWED_EQUATION_INPUT_CHARACTERS = "1234567890-+=xX*^., ";
+static const char* const ALLOWED_COEFFICIENT_INPUT_CHARACTERS = "1234567890.-";
+static const char* const ALLOWED_CONTINUE_INPUT_CHARACTERS = "yYnN";
+// Characters that must go with a space character. Otherwise the input is invalid.
+static const char* const ALLOWED_AROUND_SPACE_CHARACTERS = "+-=*";
+// Characters that can't go with a 'x' character.  Otherwise the input is invalid.
+static const char* const RESTRICTED_AROUND_X_CHARACTERS = "xX";
+// Characters that divide input string to chunks.
+static const char* const DELIMITER = "+-=";
+// Max sizes for the different types of input buffers.
+static const int MAX_INPUT_LENGTH = 512;
+static const int MAX_CHUNK_LENGTH = 32;
+
+
 // Removes occurrences of a specified character from the given string.
 static void deleteCharacter(char* input, unsigned int* inputLength, const char character)
 {

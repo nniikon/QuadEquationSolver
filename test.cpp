@@ -4,19 +4,6 @@
 int counter = 1;
 
 
-SolveTestData solveTestData[nSolveTests] = {
-    {(Coefficients){3.0, -5.0, 2.0},   (Answers){1.0, 0.66666666666666, TWO_ROOTS}, "TWO ROOTS SOLVE TEST"},
-    {(Coefficients){10.0, -5.0, -5.0}, (Answers){1.0, -0.5, TWO_ROOTS},             "TWO ROOTS SOLVE TEST"},
-    {(Coefficients){1.0, 2.0, 1.0},    (Answers){-1.0, 0.0, ONE_DOUBLE_ROOT},           "DOUBLE ROOT TEST"},
-    {(Coefficients){1.0, -2.0, 1.0},   (Answers){1.0, 0.0, ONE_DOUBLE_ROOT},            "DOUBLE ROOT TEST"},
-    {(Coefficients){0.0, 1.0, 1.0},    (Answers){-1.0, 0.0, ONE_ROOT},                "ONE ROOT SOLVE TEST"},
-    {(Coefficients){0.0, 5.0, -1.0},    (Answers){0.2, 0.0, ONE_ROOT},                "ONE ROOT SOLVE TEST"},
-    {(Coefficients){1.0, 2.0, 3.0},    (Answers){0.0, 0.0, NO_ROOTS},                "NO ROOTS SOLVE TEST"},
-    {(Coefficients){2.0, 3.0, 100.0},  (Answers){0.0, 0.0, NO_ROOTS},                "NO ROOTS SOLVE TEST"},
-};
-
-
-
 static bool compareAnswers(const Answers* a, const Answers* b)
 {
 	if (!areSameDouble(a->answerType, b->answerType))
@@ -34,6 +21,20 @@ static bool compareAnswers(const Answers* a, const Answers* b)
 
 void testSolve()
 {
+	// Test data.
+	const SolveTestData solveTestData[] = {
+    	{(Coefficients){     3.0,    -5.0,     2.0},  (Answers){     1.0, 2.0/3.0,        TWO_ROOTS},  "TWO ROOTS SOLVE TEST"},
+    	{(Coefficients){    10.0,    -5.0,    -5.0},  (Answers){     1.0,    -0.5,        TWO_ROOTS},  "TWO ROOTS SOLVE TEST"},
+    	{(Coefficients){     1.0,     2.0,     1.0},  (Answers){    -1.0,     0.0, ONE_DOUBLE_ROOT}, "DOUBLE ROOT SOLVE TEST"},
+    	{(Coefficients){     1.0,    -2.0,     1.0},  (Answers){     1.0,     0.0, ONE_DOUBLE_ROOT}, "DOUBLE ROOT SOLVE TEST"},
+    	{(Coefficients){     0.0,     1.0,     1.0},  (Answers){    -1.0,     0.0,        ONE_ROOT},    "ONE ROOT SOLVE TEST"},
+    	{(Coefficients){     0.0,     5.0,    -1.0},  (Answers){     0.2,     0.0,        ONE_ROOT},    "ONE ROOT SOLVE TEST"},
+    	{(Coefficients){     1.0,     2.0,     3.0},  (Answers){     0.0,     0.0,        NO_ROOTS},    "NO ROOTS SOLVE TEST"},
+    	{(Coefficients){     2.0,     3.0,   100.0},  (Answers){     0.0,     0.0,        NO_ROOTS},    "NO ROOTS SOLVE TEST"},
+	};
+
+	int nSolveTests = (int) (sizeof(solveTestData) / sizeof(SolveTestData));
+
 	for (int i = 0; i < nSolveTests; i++)
 	{
 		Answers answers = {0, 0, 0};
@@ -42,7 +43,7 @@ void testSolve()
 
 		if (compareAnswers(&solveTestData[i].answers, &answers))
 		{
-			printf("%s num %d passed\n", solveTestData[i].name, counter);
+			printf("%25s num %2d passed\n", solveTestData[i].name, counter);
 		}
 		else
 		{
@@ -65,11 +66,11 @@ static void testSingleEquationInput(char input[], Coefficients coefficientsRef)
             areSameDouble(coefficients.b, coefficientsRef.b) &&
             areSameDouble(coefficients.c, coefficientsRef.c)) 
         {
-            printf("EquationInput Test %d passed.\n", counter);
+            printf("%25s num %2d passed\n", "EQUATION INPUT TEST", counter);
         }
         else 
         {
-            printf("\nEquationInput TEST FAILED.\n");
+            printf("\nEquationInput TEST FAILED\n");
             printf("Input value: %s\n", input);
             printf("a = %g, expected a = %g\n", coefficients.a, coefficientsRef.a);
             printf("b = %g, expected b = %g\n", coefficients.b, coefficientsRef.b);

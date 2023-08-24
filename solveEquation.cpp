@@ -1,4 +1,6 @@
 #include "solveEquation.h"
+
+
 void solve(const Coefficients coefficients, Answers* answers)
 {
     // Check if it's a quadratic equation (a is not zero).

@@ -1,8 +1,24 @@
 #pragma once
-#include <math.h>
+#include "math.h"
 
+/**
+ * @file doubleOperations.h
+ * @brief This file contains constants and functions related to floating-point variables operations.
+ */
 
+/**
+ * @brief A small constant used for floating-point comparison.
+ */
 const double EPSILON = 1e-10;
 
-// Compares two floating-point numbers and returns true if they are the same, otherwise returns false.
+/**
+ * @brief Compares two floating-point numbers for equality within a small epsilon.
+ * 
+ * This function checks if the difference between two floating-point numbers is within the defined EPSILON.
+ * 
+ * @param f The first number.
+ * @param s The second number.
+ * 
+ * @return `true` if the numbers are considered equal, `false` otherwise.
+ */
 bool areSameDouble(double f, double s);

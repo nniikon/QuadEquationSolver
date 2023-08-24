@@ -5,31 +5,48 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * @file inputCoefficients.h
+ * @brief This file contains functions and constants 
+ * 
+ */
 
-// Characters that are allowed to be used in different types of interactions with the user.
-const char* const ALLOWED_EQUATION_INPUT_CHARACTERS = "1234567890-+=xX*^., ";
-const char* const ALLOWED_COEFFICIENT_INPUT_CHARACTERS = "1234567890.-";
-const char* const ALLOWED_CONTINUE_INPUT_CHARACTERS = "yYnN";
-// Characters that must go with a space character. Otherwise the input is invalid.
-const char* const ALLOWED_AROUND_SPACE_CHARACTERS = "+-=*";
-// Characters that can't go with a 'x' character.  Otherwise the input is invalid.
-const char* const RESTRICTED_AROUND_X_CHARACTERS = "xX";
-// Characters that divide input string to chunks.
-const char* const DELIMITER = "+-=";
-// Max sizes for the different types of input buffers.
-const int MAX_INPUT_LENGTH = 512;
-const int MAX_CHUNK_LENGTH = 32;
-// Input types
-enum INPUT_TYPE{COEFFICIENT_INPUT, EQUATION_INPUT};
+/**
+ * @brief Enumerates the possible types of user input.
+ */
+enum INPUT_TYPE {
+    COEFFICIENT_INPUT, /**< Coefficient input type */
+    EQUATION_INPUT     /**< Equation input type */
+};
 
-
-// Prompts the user to select their preferred input type.
+/**
+ * @brief Prompts the user to select their preferred input type.
+ * 
+ * @return The selected input type.
+ */
 int askPreferredInput();
-// Prompts the user to input coefficients based on the input type.
-void takeInput(Coefficients* coefficients, int inputType);
-// Askes the user if they want to continue.
-bool wantToContinue();
-// Sets the coefficients in the provided structure based on the provided input.
-void equationInputToCoefficients(Coefficients* coefficients, char input[]);
 
-// TODO: add comments to the .cpp file
+/**
+ * @brief Prompts the user to input coefficients based on the input type.
+ * 
+ * @param [out] coefficients Pointer to the Coefficients structure where input coefficients will be stored.
+ * @param [in]  inputType    The input type.
+ */
+void takeInput(Coefficients* coefficients, int inputType);
+
+/**
+ * @brief Asks the user if they want to continue.
+ * 
+ * @return `true` if the user wants to continue, `false` otherwise.
+ */
+bool wantToContinue();
+
+/**
+ * @brief Converts equation input to coefficients.
+ * 
+ * This function sets the coefficients in the provided structure based on the provided input.
+ * 
+ * @param [out] coefficients Pointer to the Coefficients structure where coefficients will be stored.
+ * @param [in] input The input string representing the equation.
+ */
+void equationInputToCoefficients(Coefficients* coefficients, char input[]);

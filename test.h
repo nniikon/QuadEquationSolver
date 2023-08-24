@@ -1,3 +1,8 @@
+/**
+ * @file test.h
+ * @brief This file defines a test suite for the equation solver and coefficient input functions.
+ */
+
 #pragma once
 #include "solveEquation.h"
 #include "inputCoefficients.h"
@@ -6,20 +11,26 @@
 #include <stdlib.h>
 
 
-struct SolveTestData
-{
-    Coefficients coefficients;
-    Answers answers;
-    const char* name;
+/**
+ * @brief Structure to hold test data for solving equations.
+ */
+struct SolveTestData {
+    Coefficients coefficients; /**< Coefficients for the equation */
+    Answers answers;           /**< Expected answers for the equation */
+    const char* name;          /**< Name of the test case */
 };
 
-// Test solve.cpp.
+/**
+ * @brief Tests solve() via hardcoded tests and prints out the results. 
+ * 
+ * Takes the hardcoded tests data from the solveTestData[].
+ */
 void testSolve();
 
-// Test inputCoefficients.cpp.
+/**
+ * @brief Tests equationInput() via hardcoded tests and prints out the results. 
+ * 
+ */
 void testEquationInput();
 
-// Amount of solve tests.
-const int nSolveTests = 8;
 
-extern SolveTestData solveTestData[nSolveTests];
