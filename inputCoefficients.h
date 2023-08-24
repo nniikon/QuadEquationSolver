@@ -31,7 +31,5 @@ void takeInput(Coefficients* coefficients, int inputType);
 bool wantToContinue();
 // Sets the coefficients in the provided structure based on the provided input.
 void equationInputToCoefficients(Coefficients* coefficients, char input[]);
-// Tests equation input
-void testEquationInput();
 
 // TODO: add comments to the .cpp file

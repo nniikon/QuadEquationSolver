@@ -1,72 +1,60 @@
 #include "test.h"
 
-static void testSingleSolve(Coefficients coefficients, Answers answersRef)
+// Variable for test numbering.
+int counter = 1;
+
+
+SolveTestData solveTestData[nSolveTests] = {
+    {(Coefficients){3.0, -5.0, 2.0},   (Answers){1.0, 0.66666666666666, TWO_ROOTS}, "TWO ROOTS SOLVE TEST"},
+    {(Coefficients){10.0, -5.0, -5.0}, (Answers){1.0, -0.5, TWO_ROOTS},             "TWO ROOTS SOLVE TEST"},
+    {(Coefficients){1.0, 2.0, 1.0},    (Answers){-1.0, 0.0, ONE_DOUBLE_ROOT},           "DOUBLE ROOT TEST"},
+    {(Coefficients){1.0, -2.0, 1.0},   (Answers){1.0, 0.0, ONE_DOUBLE_ROOT},            "DOUBLE ROOT TEST"},
+    {(Coefficients){0.0, 1.0, 1.0},    (Answers){-1.0, 0.0, ONE_ROOT},                "ONE ROOT SOLVE TEST"},
+    {(Coefficients){0.0, 5.0, -1.0},    (Answers){0.2, 0.0, ONE_ROOT},                "ONE ROOT SOLVE TEST"},
+    {(Coefficients){1.0, 2.0, 3.0},    (Answers){0.0, 0.0, NO_ROOTS},                "NO ROOTS SOLVE TEST"},
+    {(Coefficients){2.0, 3.0, 100.0},  (Answers){0.0, 0.0, NO_ROOTS},                "NO ROOTS SOLVE TEST"},
+};
+
+
+
+static bool compareAnswers(const Answers* a, const Answers* b)
 {
-	static int counter = 1;
-	Answers answers = {0, 0, 0};
-
-	solve(coefficients, &answers);
-
-	// Two roots
-	if (answersRef.answerType == TWO_ROOTS)
-	{
-		if (answersRef.answerType == answers.answerType &&
-			areSameDouble(answersRef.x1, answers.x1) &&
-			areSameDouble(answersRef.x2, answers.x2) )
-		{
-			printf("Solve Test %d passed\n", counter);
-		} 
-		else
-		{
-			printf("SOLVE TEST %d FAILED\n", counter);
-			printf("x1 = %g\nx2 = %g\n", answers.x1, answers.x2);
-			printf("Expected x1 = %g\nExpected x2 = %g\n", answersRef.x1, answersRef.x2);
-		}
-	}
-	// One root
-	else if (answersRef.answerType == ONE_ROOT || answersRef.answerType == ONE_DOUBLE_ROOT)
-	{
-		if (answersRef.answerType == answers.answerType &&
-			areSameDouble(answersRef.x1, answers.x1) )
-		{
-			printf("Solve Test %d passed\n", counter);
-		} 
-		else
-		{
-			printf("SOLVE TEST %d FAILED\n", counter);
-			printf("x1 = %g\n", answers.x1);
-			printf("Expected x1 = %g\n", answersRef.x1);
-		}
-	}
-	// No roots
+	if (!areSameDouble(a->answerType, b->answerType))
+		return false;
+	if (a->answerType == TWO_ROOTS)
+		return (areSameDouble(a->x1, b->x1) && areSameDouble(a->x2, b->x2));
+	else if (a->answerType == ONE_DOUBLE_ROOT || a->answerType == ONE_ROOT)
+		return areSameDouble(a->x1, b->x1);
+	else if (a->answerType == NO_ROOTS || a->answerType == INF_ROOTS)
+		return true;
 	else
-	{
-		if (answersRef.answerType == answers.answerType)
-		{
-			printf("Solve Test %d passed\n", counter);
-		} 
-		else
-		{
-			printf("SOLVE TEST %d FAILED\n", counter);
-		}
-	}
-	counter++;
+		assert(0);
 }
+
 
 void testSolve()
 {
-	testSingleSolve((Coefficients) {3, -5, 2},  (Answers) {1.0, 0.66666666666666, TWO_ROOTS});
-	testSingleSolve((Coefficients) {10, -5, -5},(Answers) {1.0, -0.5, TWO_ROOTS});
-	testSingleSolve((Coefficients) {1, 2, 1},   (Answers) {-1.0, 0, ONE_DOUBLE_ROOT});
-	testSingleSolve((Coefficients) {1, -2, 1},  (Answers) {1.0, 0, ONE_DOUBLE_ROOT});
-	testSingleSolve((Coefficients) {0, 1, 1},   (Answers) {-1.0, 0, ONE_ROOT});
-	testSingleSolve((Coefficients) {0, 5, -1},  (Answers) {0.2, 0, ONE_ROOT});
+	for (int i = 0; i < nSolveTests; i++)
+	{
+		Answers answers = {0, 0, 0};
+
+		solve(solveTestData[i].coefficients, &answers);
+
+		if (compareAnswers(&solveTestData[i].answers, &answers))
+		{
+			printf("%s num %d passed\n", solveTestData[i].name, counter);
+		}
+		else
+		{
+			printf("\n%s num %d FAILED FAILED FAILED FAILED WARNING!\n\n", solveTestData[i].name, counter);
+		}
+	counter += 1;
+	}
 }
 
 // Compares the output of the program's equation solver with expected coefficients.
 static void testSingleEquationInput(char input[], Coefficients coefficientsRef) 
 {
-    static int counter = 1;
     Coefficients coefficients = {0, 0, 0};
     
 	// Run the code that's being tested.

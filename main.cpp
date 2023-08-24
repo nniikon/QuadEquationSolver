@@ -32,9 +32,10 @@ TODO:
 8) Fix some equation input bugs;
 9) Use Doxygen to document functions;
 10) Fix unit-tests.
+11) Use "const Struct* struct" instead of "Struct struct"
 */
 
-#define TEST
+//#define TEST
 
 int main()
 {
