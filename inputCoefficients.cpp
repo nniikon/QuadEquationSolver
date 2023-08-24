@@ -348,7 +348,8 @@ static void takeCoefficientInput(Coefficients* coefficients)
 }
 
 
-static void getEquationInput(char input[])
+// 
+static void setEquationInput(char input[])
 {
     // Clear the input buffer.
     while (getchar() != '\n')
@@ -372,7 +373,8 @@ static void getEquationInput(char input[])
 }
 
 
-void setEquationInput(Coefficients* coefficients, char input[])
+// Sets coefficients, takes a correct string as input.
+void equationInputToCoefficients(Coefficients* coefficients, char input[])
 {
     unsigned int inputLength = strlen(input);
 
@@ -381,11 +383,6 @@ void setEquationInput(Coefficients* coefficients, char input[])
 
     // Set the coefficients
     setCoefficients(input, coefficients);
-
-    #ifdef DEBUG
-        printf("\nDEBUG: standardized equation: %s\n", input);
-        printf("DEBUG: a = %f \nDEBUG: b = %f \nDEBUG: c = %f\n\n", a, b, c);
-    #endif
 }
 
 
@@ -418,11 +415,12 @@ int askPreferredInput() {
 }
 
 
+// Promts user to enter the equation and sets the corresponding coefficients. 
 static void takeEquationInput(Coefficients* coefficients)
 {
     char input[MAX_INPUT_LENGTH];
-    getEquationInput(input);
-    setEquationInput(coefficients, input);
+    setEquationInput(input);
+    equationInputToCoefficients(coefficients, input);
 }
 
 

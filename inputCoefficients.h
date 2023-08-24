@@ -30,7 +30,7 @@ void takeInput(Coefficients* coefficients, int inputType);
 // Askes the user if they want to continue.
 bool wantToContinue();
 // Sets the coefficients in the provided structure based on the provided input.
-void setEquationInput(Coefficients* coefficients, char input[]);
+void equationInputToCoefficients(Coefficients* coefficients, char input[]);
 // Tests equation input
 void testEquationInput();
 
