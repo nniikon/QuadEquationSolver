@@ -39,7 +39,7 @@ void testSolve()
 	{
 		Answers answers = {0, 0, 0};
 
-		solve(solveTestData[i].coefficients, &answers);
+		solve(&solveTestData[i].coefficients, &answers);
 
 		if (compareAnswers(&solveTestData[i].answers, &answers))
 		{

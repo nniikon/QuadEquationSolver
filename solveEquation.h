@@ -20,8 +20,7 @@
  * 
  * @param [in]  coefficients The coefficients of the equation.
  * @param [out] answers      Pointer to the Answers structure where solutions will be stored.
- * @todo                     Change input to constant pointer instead of the constant structure. 
  */
-void solve(const Coefficients coefficients, Answers* answers);
+void solve(const Coefficients* coefficients, Answers* answers);
 
 #endif

@@ -19,9 +19,8 @@
  * 
  * @param answers The answers of the equation.
  * 
- * @todo Change input to constant pointer instead of the structure. 
  */
-void printAnswers(const Answers answers);
+void printAnswers(const Answers* answers);
 
 /**
  * @brief Prints the equation in the "ax^2 + bx + c" format.
@@ -30,8 +29,7 @@ void printAnswers(const Answers answers);
  * 
  * @param coefficients The coefficients of the equation.
  * 
- * @todo Change input to constant pointer instead of the structure. 
  */
-void printFormattedEquation(const Coefficients coefficients);
+void printFormattedEquation(const Coefficients* coefficients);
 
 #endif

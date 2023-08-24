@@ -8,30 +8,16 @@ x + 2x + 3*x = 5x^2
 */
 
 #include "test.h"
+#include "cfg.h"
 #include "inputCoefficients.h"
 #include "printEquation.h"
 #include "solveEquation.h"
 #include <iostream>
 /*
 TODO:
--1) Write TODO list;                             +
-0) use VSCode;                                   +
-1) Change file names;                            +
-2) Kill consts.h;                                +
-3) Come up with an alternative for #pragma once; +
-
-#if !defined(ABC)
-#define ABC
-	I was close =)
-#endif
 
 4) Try cloning assert;
 5) Use assert;
-6) Add different types of singleROOT feature;    +
-7) CodeStyle for commits;                        +
-8) Fix some equation input bugs;                 +
-9) Use Doxygen to document functions;            +
-10) Fix unit-tests.                              +
 11) Use "const Struct* struct" instead of "Struct struct"
 */
 
@@ -39,27 +25,30 @@ TODO:
 
 int main()
 {
-	#ifdef TEST
+	if (ENABLE_TESTS)
+	{
 		testEquationInput();
 		testSolve();
-	#endif
-
-	Coefficients coefficients{0, 0, 0};
-	Answers answers{0, 0, 0};
-
-	do
+	}
+	else
 	{
-		int inputType = askPreferredInput();
+		Coefficients coefficients{0, 0, 0};
+		Answers answers{0, 0, 0};
 
-		resetStructs(&coefficients, &answers);
+		do
+		{
+			int inputType = askPreferredInput();
 
-		takeInput(&coefficients, inputType);
+			resetStructs(&coefficients, &answers);
 
-		printFormattedEquation(coefficients);
+			takeInput(&coefficients, inputType);
 
-		solve(coefficients, &answers);
+			printFormattedEquation(&coefficients);
 
-		printAnswers(answers);
+			solve(&coefficients, &answers);
 
-	} while(wantToContinue());
+			printAnswers(&answers);
+
+		} while(wantToContinue());
+	}
 }

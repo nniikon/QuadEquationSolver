@@ -1,0 +1,1 @@
+const bool ENABLE_TESTS             = true; // true or false.
