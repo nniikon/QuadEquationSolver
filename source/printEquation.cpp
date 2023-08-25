@@ -1,4 +1,4 @@
-#include "printEquation.h"
+#include "../include/printEquation.h"
 void printFormattedEquation(const Coefficients* coefficients)
 {
     printf("\n");

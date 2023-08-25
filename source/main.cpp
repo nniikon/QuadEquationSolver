@@ -10,10 +10,10 @@ x + 2x + 3*x = 5x^2
 //#define TEST
 //#define LOG
 
-#include "test.h"
-#include "inputCoefficients.h"
-#include "printEquation.h"
-#include "solveEquation.h"
+#include "../include/test.h"
+#include "../include/inputCoefficients.h"
+#include "../include/printEquation.h"
+#include "../include/solveEquation.h"
 
 /*
 TODO:

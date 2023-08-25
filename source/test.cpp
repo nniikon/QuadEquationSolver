@@ -1,4 +1,4 @@
-#include "test.h"
+#include "../include/test.h"
 
 
 // Variable for test numbering.

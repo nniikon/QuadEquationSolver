@@ -1,4 +1,4 @@
-#include "inputCoefficients.h"
+#include "../include/inputCoefficients.h"
 #include <assert.h>
 //#include <math.h>
 

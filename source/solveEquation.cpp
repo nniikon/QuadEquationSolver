@@ -1,4 +1,4 @@
-#include "solveEquation.h"
+#include "../include/solveEquation.h"
 
 
 void solve(const Coefficients* coefficients, Answers* answers)
