@@ -21,7 +21,7 @@ static const int INPUT_SIZE = 256;
 static const int CHUNK_SIZE = 32;
 
    
-//#define LOG
+#define LOG
 
 // Clears the input buffer until a newline character is encountered.
 static void clearInputBuffer()
@@ -81,7 +81,13 @@ static bool hasOnlyAllowedCharacters(const char* input, const char* allowedChara
 
         // If the current character is not in the allowed list, return false.
         if (!isListed)
+        {
+            #ifdef LOG
+                printf("\t\tLOG: input[%d] = %c\n", i, input[i]);
+                printf("\t\tLOG: %c is not among allowed characters\n", input[i]);
+            #endif
             return false;
+        }
     }
 
     // If all characters are among the allowed ones, return true.
@@ -202,6 +208,7 @@ static void deleteRepetitiveCharacters(char input[], const char character)
 
 static bool isChunkCorrect(const char chunk[])
 {
+    return true;
     size_t chunkLength = sizeof(chunk);
     int    nInChunkX        = 0; // Number of X in a chunk.
     int    nInChunkStar     = 0; // Number of * in a chunk.
@@ -213,6 +220,8 @@ static bool isChunkCorrect(const char chunk[])
         if (chunk[i] == 'x')
         {
             nInChunkX++;
+
+            // Work in progress...
         }
     }
 }
@@ -222,13 +231,18 @@ static bool isChunkCorrect(const char chunk[])
 // Checks if the given string is correct and can be used to set coefficients
 static bool isEquationInputCorrect(const char input[])
 {
+    #ifdef LOG
+        printf("\t\tLOG: isEquationInputCorrect started.\n");
+    #endif
     char inputBuffer[INPUT_SIZE];
     strcpy(inputBuffer, input); // input[] --> inputBuffer[]
-    if (hasOnlyAllowedCharacters(inputBuffer, ALLOWED_AROUND_SPACE_CHARACTERS))
+    if (!hasOnlyAllowedCharacters(input, ALLOWED_EQUATION_INPUT_CHARACTERS))
     {
         return false;
     }
-
+    #ifdef LOG
+        printf("\t\tLOG: passed hasOnlyAllowedCharacters check!\n");
+    #endif
     // Delete double spaces. We allow them =)
     deleteRepetitiveCharacters(inputBuffer, ' '); 
 
@@ -240,11 +254,11 @@ static bool isEquationInputCorrect(const char input[])
     {
         if (hasCharacterInString(inputBuffer[i], DELIMITER) || i == inputBufferLength) // If it hits a delimiter.
         {
-            // chunkBuffer -> isChunkCorrect
+            // chunkBuffer[] -> isChunkCorrect()
             chunkBuffer[chunkIndex] = '\0';  
             if (!isChunkCorrect(chunkBuffer))
                 return false;
-            // Reset chunkBuffer
+            // Reset chunkBuffer[]
             chunkIndex = 0; 
             chunkBuffer[0] = '\0';
             continue;

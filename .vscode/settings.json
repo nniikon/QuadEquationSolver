@@ -1,5 +1,12 @@
 {
     "files.associations": {
         "functional": "cpp"
-    }
+    },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "c:\\Users\\SystemX\\Documents\\GitHub\\quadratic_solver",
+            "binaryPath": "c:\\Users\\SystemX\\Documents\\GitHub\\quadratic_solver\\KBADPATKA",
+            "binaryArgs": []
+        }
+    ]
 }
