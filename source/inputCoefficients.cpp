@@ -21,7 +21,7 @@ static const int INPUT_SIZE = 256;
 static const int CHUNK_SIZE = 32;
 
    
-#define LOG
+//#define LOG
 
 // Clears the input buffer until a newline character is encountered.
 static void clearInputBuffer()
@@ -191,11 +191,14 @@ static bool isChunkCorrect(const char chunk[])
     int        nXsInChunk     = 0; // Number of X in a chunk.
     int     nStarsInChunk     = 0; // Number of * in a chunk.
     int    nCaretsInChunk     = 0; // Number of ^ in a chunk.
-    int    nNumbersInChunk    = 0; // Number of different numbers in a chunk.
+    int   nNumbersInChunk     = 0; // Number of different numbers in a chunk.
     bool   passedX        = false; // Checks if we already passed X.
+
     #ifdef LOG
         printf("\t\tLOG: chunk: <%s>\n", chunk);
     #endif
+
+    // Iterrate through the chunk[].
     for (size_t i = 0; i < chunkLength; i++)
     {
         if (chunk[i] == 'x')
@@ -210,6 +213,9 @@ static bool isChunkCorrect(const char chunk[])
         else if (chunk[i] == '^')
         {
             nCaretsInChunk++;
+            // If ^2 goes without X.
+            if ((i != 0 && chunk[i - 1] == 'x') || i == 0)
+                return false;
         }
         // If the number is the first character but not ^2...
         // or if the number goes after a non-number character but not ^2...
@@ -222,11 +228,12 @@ static bool isChunkCorrect(const char chunk[])
                 #ifdef LOG
                     printf("\t\tLOG: new number starts with: <%c>\n", chunk[i]);
                 #endif
-                // If the number goes after the X.
+
+                // If the number (not ^2) goes after the X.
                 return false;
             }
         }
-        if (nNumbersInChunk == 2 || nCaretsInChunk == 2 || nXsInChunk == 2 || nStarsInChunk == 2)
+        if (nNumbersInChunk > 1 || nCaretsInChunk > 1 || nXsInChunk > 1 || nStarsInChunk > 1)
         {
             return false;
         }
@@ -242,32 +249,39 @@ static bool isEquationInputCorrect(const char input[])
     #ifdef LOG
         printf("\t\tLOG: isEquationInputCorrect started.\n");
     #endif
+
     char inputBuffer[INPUT_SIZE];
     strcpy(inputBuffer, input); // input[] --> inputBuffer[]
-    if (!hasOnlyAllowedCharacters(input, ALLOWED_EQUATION_INPUT_CHARACTERS)
-      || lengthOfTheLongestChunk(input) > CHUNK_SIZE
-      ||!hasSymbolsAround(input, ' ', ALLOWED_AROUND_SPACE_CHARACTERS))
+
+    // Delete multiple spaces. We allow them =)
+    deleteRepetitiveCharacters(inputBuffer, ' '); 
+
+    // The first level of "protection".
+    if (!hasOnlyAllowedCharacters(inputBuffer, ALLOWED_EQUATION_INPUT_CHARACTERS) // Only has allowed characters.
+      || lengthOfTheLongestChunk(inputBuffer) > CHUNK_SIZE                        // Chunks are not too long.
+      ||!hasSymbolsAround(inputBuffer, ' ', ALLOWED_AROUND_SPACE_CHARACTERS))     // Spaces are in the right places.
     {
         return false;
     }
     #ifdef LOG
         printf("\t\tLOG: passed hasOnlyAllowedCharacters check!\n");
     #endif
-    // Delete double spaces. We allow them =)
-    deleteRepetitiveCharacters(inputBuffer, ' '); 
-
+    
+    // The second level of "protection".
+    // We split inputBuffer[] into chunks[] and pass them to isChunkCorrect().
     char chunkBuffer[CHUNK_SIZE]{};
     int chunkIndex = 0;
 
     size_t inputBufferLength = sizeof(inputBuffer);
     for (size_t i = 0; i <= inputBufferLength; i++)
     {
-        if (hasCharacterInString(inputBuffer[i], DELIMITER) || i == inputBufferLength) // If it hits a delimiter.
+        if (hasCharacterInString(inputBuffer[i], DELIMITER) || i == inputBufferLength) // If it hits a delimiter or the end.
         {
             // chunkBuffer[] -> isChunkCorrect()
             chunkBuffer[chunkIndex] = '\0';  
             if (!isChunkCorrect(chunkBuffer))
                 return false;
+
             // Reset chunkBuffer[]
             chunkIndex = 0; 
             chunkBuffer[0] = '\0';
