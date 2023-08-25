@@ -95,7 +95,6 @@ static bool hasCharacterInString(const char character, const char input[])
     size_t inputLength = strlen(input);
     for (size_t i = 0; i < inputLength; ++i)
 	{
-        assert(i < 1024);
         if (character == input[i])
         {
             return true;
@@ -131,7 +130,7 @@ static bool hasSymbolsAround(const char input[], const char givenCharacter, cons
 }
 
 
-// Returns true if every given character in the string has no restricted characters around.
+// Returns `false` if every given character in the string has no restricted characters around.
 static bool hasRestrictedSymbolsAround(const char input[], const char givenCharacter, const char aroundCharacters[])
 {
     size_t inputLength = strlen(input);

@@ -34,8 +34,8 @@ int main()
 	{
 		INPUT_TYPE inputType = askPreferredInput();
 
-		Coefficients coefficients{0.0, 0.0, 0.0};
-		Answers      answers{0.0, 0.0, NO_ROOTS};
+		Coefficients coefficients{0.0, 0.0,   0.0   };
+		Answers      answers     {0.0, 0.0, NO_ROOTS};
 
 		takeInput(&coefficients, inputType);
 
