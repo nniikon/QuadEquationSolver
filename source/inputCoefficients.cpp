@@ -136,32 +136,6 @@ static bool hasSymbolsAround(const char input[], const char givenCharacter, cons
 }
 
 
-// Returns `false` if every given character in the string has no restricted characters around.
-static bool hasRestrictedSymbolsAround(const char input[], const char givenCharacter, const char aroundCharacters[])
-{
-    size_t inputLength = strlen(input);
-
-	for(size_t i = 0; i < inputLength - 1; ++i)
-	{
-		if(input[i] == givenCharacter)
-		{
-			// Check if the symbol is to the left.
-			bool isToTheLeft = (i >= 1) && hasCharacterInString(input[i - 1], aroundCharacters);
-
-			// Check if the symbol is to the right.
-			bool isToTheRight = hasCharacterInString(input[i + 1], aroundCharacters);
-
-			// If its neither to the left nor to the right...
-			if (isToTheLeft || isToTheRight)
-			{
-				return true; // fail.
-			}
-		}
-	}
-	return false;
-}
-
-
 // Calculates length of the longest chunk in the given string.
 static int lengthOfTheLongestChunk(const char* input)
 {
@@ -206,24 +180,58 @@ static void deleteRepetitiveCharacters(char input[], const char character)
     input[currentEmptySpace] = '\0';
 }
 
+static bool isNumberCharacter(const char character)
+{
+    return hasCharacterInString(character, "1234567890.,-=eE");
+}
+
 static bool isChunkCorrect(const char chunk[])
 {
-    return true;
     size_t chunkLength = sizeof(chunk);
-    int    nInChunkX        = 0; // Number of X in a chunk.
-    int    nInChunkStar     = 0; // Number of * in a chunk.
-    int    nInChunkCaret    = 0; // Number of ^ in a chunk.
-    bool   passedX          = 0; // Checks if we already passed X.
-
-    for (int i = 0; i < chunkLength; i++)
+    int        nXsInChunk     = 0; // Number of X in a chunk.
+    int     nStarsInChunk     = 0; // Number of * in a chunk.
+    int    nCaretsInChunk     = 0; // Number of ^ in a chunk.
+    int    nNumbersInChunk    = 0; // Number of different numbers in a chunk.
+    bool   passedX        = false; // Checks if we already passed X.
+    #ifdef LOG
+        printf("\t\tLOG: chunk: <%s>\n", chunk);
+    #endif
+    for (size_t i = 0; i < chunkLength; i++)
     {
         if (chunk[i] == 'x')
         {
-            nInChunkX++;
-
-            // Work in progress...
+            nXsInChunk++;
+            passedX = true;
+        }
+        else if (chunk[i] == '*')
+        {
+            nStarsInChunk++;
+        }
+        else if (chunk[i] == '^')
+        {
+            nCaretsInChunk++;
+        }
+        // If the number is the first character but not ^2...
+        // or if the number goes after a non-number character but not ^2...
+        else if ( (isNumberCharacter(chunk[i]) && i == 0                             && chunk[i - 1] != '^')
+               || (isNumberCharacter(chunk[i]) && !(isNumberCharacter(chunk[i - 1])) && chunk[i - 1] != '^') )
+        {
+            nNumbersInChunk++; // ... that's a new number.
+            if (passedX) 
+            {
+                #ifdef LOG
+                    printf("\t\tLOG: new number starts with: <%c>\n", chunk[i]);
+                #endif
+                // If the number goes after the X.
+                return false;
+            }
+        }
+        if (nNumbersInChunk == 2 || nCaretsInChunk == 2 || nXsInChunk == 2 || nStarsInChunk == 2)
+        {
+            return false;
         }
     }
+    return true;
 }
 
 
@@ -236,7 +244,9 @@ static bool isEquationInputCorrect(const char input[])
     #endif
     char inputBuffer[INPUT_SIZE];
     strcpy(inputBuffer, input); // input[] --> inputBuffer[]
-    if (!hasOnlyAllowedCharacters(input, ALLOWED_EQUATION_INPUT_CHARACTERS))
+    if (!hasOnlyAllowedCharacters(input, ALLOWED_EQUATION_INPUT_CHARACTERS)
+      || lengthOfTheLongestChunk(input) > CHUNK_SIZE
+      ||!hasSymbolsAround(input, ' ', ALLOWED_AROUND_SPACE_CHARACTERS))
     {
         return false;
     }
@@ -301,7 +311,7 @@ static void normalizeEquationInput(char* input, unsigned int* inputLength)
 
 
 // Works with setCoefficients.
-static void setChunk(char* chunk, bool passedEqualSign, Coefficients* coefficients)
+static void parseChunkToCoefficient(char* chunk, bool passedEqualSign, Coefficients* coefficients)
 {
     // A chunk should look something like:
 
@@ -387,7 +397,7 @@ static void setCoefficients(char* input, Coefficients* coefficients)
         {
             chunkBuffer[chunkCounter] = '\0';                     // Terminate the string in the buffer
             chunkCounter = 0;                                     // Reset the counter for the next chunk
-            setChunk(chunkBuffer, passedEqualSign, coefficients); // Process the chunk
+            parseChunkToCoefficient(chunkBuffer, passedEqualSign, coefficients); // Process the chunk
 
             // If the current symbol is the equal sign, set the flag.
             if (input[i] == '=')

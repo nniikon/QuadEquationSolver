@@ -17,7 +17,6 @@ x + 2x + 3*x = 5x^2
 
 /*
 TODO:
-0) start the program
 4) Try cloning assert;
 5) Use assert;
 */
