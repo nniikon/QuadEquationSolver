@@ -1,33 +1,28 @@
-# Compiler and compiler flags
-CXX = g++
-CXXFLAGS = -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equal -Winline -Wunreachable-code -Wmissing-declarations -Wmissing-include-dirs -Wswitch-enum -Wswitch-default -Weffc++ -Wmain -Wextra -Wall -g -pipe -fexceptions -Wcast-qual -Wconversion -Wctor-dtor-privacy -Wempty-body -Wformat-security -Wformat=2 -Wignored-qualifiers -Wlogical-op -Wno-missing-field-initializers -Wnon-virtual-dtor -Woverloaded-virtual -Wpointer-arith -Wsign-promo -Wstack-usage=8192 -Wstrict-aliasing -Wstrict-null-sentinel -Wtype-limits -Wwrite-strings -Werror=vla -D_DEBUG -D_EJUDGE_CLIENT_SIDE
+FLAGS =# -Wshadow -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equal -Winline -Wunreachable-code -Wmissing-declarations -Wmissing-include-dirs -Wswitch-enum -Wswitch-default -Weffc++ -Wmain -Wextra -Wall -g -pipe -fexceptions -Wcast-qual -Wconversion -Wctor-dtor-privacy -Wempty-body -Wformat-security -Wformat=2 -Wignored-qualifiers -Wlogical-op -Wno-missing-field-initializers -Wnon-virtual-dtor -Woverloaded-virtual -Wpointer-arith -Wsign-promo -Wstack-usage=8192 -Wstrict-aliasing -Wstrict-null-sentinel -Wtype-limits -Wwrite-strings -Werror=vla -D_DEBUG -D_EJUDGE_CLIENT_SIDE
 
-# Source files and output executable
 SRC_DIR = source
 BUILD_DIR = build
-EXECUTABLE = KBADPATKA
+EXE_NAME = KBADPATKA.exe
 
-# List of source files and corresponding object files
-SRCS = $(wildcard $(SRC_DIR)/*.cpp)
-OBJS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRCS))
+all: start
 
-# Default target
-all: $(EXECUTABLE)
+start: $(BUILD_DIR)\test.o $(BUILD_DIR)\solveEquation.o $(BUILD_DIR)\printEquation.o $(BUILD_DIR)\inputCoefficients.o $(BUILD_DIR)\doubleOperations.o $(BUILD_DIR)\main.o
+	g++ $(BUILD_DIR)\test.o $(BUILD_DIR)\solveEquation.o $(BUILD_DIR)\printEquation.o $(BUILD_DIR)\inputCoefficients.o $(BUILD_DIR)\doubleOperations.o $(BUILD_DIR)\main.o $(FLAGS) -o $(EXE_NAME)
 
-# Rule to build the executable
-$(EXECUTABLE): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+$(BUILD_DIR)\main.o: $(SRC_DIR)\main.cpp
+	g++ $(SRC_DIR)\main.cpp -c $(FLAGS) -o $(BUILD_DIR)\main.o
 
-# Rule to compile source files into object files
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+$(BUILD_DIR)\doubleOperations.o: $(SRC_DIR)\doubleOperations.cpp
+	g++ $(SRC_DIR)\doubleOperations.cpp -c $(FLAGS) -o $(BUILD_DIR)\doubleOperations.o
 
-# Create the build directory if it doesn't exist
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+$(BUILD_DIR)\inputCoefficients.o: $(SRC_DIR)\inputCoefficients.cpp
+	g++ $(SRC_DIR)\inputCoefficients.cpp -c $(FLAGS) -o $(BUILD_DIR)\inputCoefficients.o
 
-# Clean up intermediate object files and the executable
-clean:
-	rm -rf $(BUILD_DIR) $(EXECUTABLE)
-
-.PHONY: all clean
+$(BUILD_DIR)\printEquation.o: $(SRC_DIR)\printEquation.cpp
+	g++ $(SRC_DIR)\printEquation.cpp -c $(FLAGS) -o $(BUILD_DIR)\printEquation.o
+	
+$(BUILD_DIR)\solveEquation.o: $(SRC_DIR)\solveEquation.cpp
+	g++ $(SRC_DIR)\solveEquation.cpp -c $(FLAGS) -o $(BUILD_DIR)\solveEquation.o
+	
+$(BUILD_DIR)\test.o: $(SRC_DIR)\test.cpp
+	g++ $(SRC_DIR)\test.cpp -c $(FLAGS) -o $(BUILD_DIR)\test.o
