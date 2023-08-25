@@ -1,6 +1,6 @@
 /**
  * @file inputCoefficients.h
- * @brief This file contains functions and constants 
+ * @brief This file includes functions and constants that handle user input.
  */
 
 #ifndef INPUT_COEFFICIENTS_H
@@ -51,7 +51,7 @@ bool wantToContinue();
  * This function sets the coefficients in the provided structure based on the provided input.
  * 
  * @param [out] coefficients Pointer to the `Coefficients` structure where coefficients will be stored.
- * @param [in] input The input string representing the equation.
+ * @param [in]  input        The input string representing the equation.
  * 
  */
 void equationInputToCoefficients(Coefficients* coefficients, char input[]);

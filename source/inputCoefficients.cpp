@@ -20,7 +20,7 @@ static const char* const DELIMITER = "+-=";
 static const int INPUT_SIZE = 256; 
 static const int CHUNK_SIZE = 32;
 
-
+   
 //#define LOG
 
 // Clears the input buffer until a newline character is encountered.
@@ -180,14 +180,79 @@ static int lengthOfTheLongestChunk(const char* input)
 }
 
 
+static void deleteRepetitiveCharacters(char input[], const char character)
+{
+    size_t currentEmptySpace = 0;
+    size_t inputLength = strlen(input);
+
+    // Iterate through the input string.
+    for (size_t i = 0; i < inputLength; ++i) // Fix loop condition
+    {
+        // If the current character is not the character to be deleted...
+        if (input[i] != character || input[i + 1] != character)
+        {
+            // ... move the current character to the position of the current "empty" space and increment it.
+            input[currentEmptySpace] = input[i];
+            currentEmptySpace++;
+        }
+    }
+
+    input[currentEmptySpace] = '\0';
+}
+
+static bool isChunkCorrect(const char chunk[])
+{
+    size_t chunkLength = sizeof(chunk);
+    int    nInChunkX        = 0; // Number of X in a chunk.
+    int    nInChunkStar     = 0; // Number of * in a chunk.
+    int    nInChunkCaret    = 0; // Number of ^ in a chunk.
+    bool   passedX          = 0; // Checks if we already passed X.
+
+    for (int i = 0; i < chunkLength; i++)
+    {
+        if (chunk[i] == 'x')
+        {
+            nInChunkX++;
+        }
+    }
+}
+
+
+
 // Checks if the given string is correct and can be used to set coefficients
 static bool isEquationInputCorrect(const char input[])
 {
-    return     hasSymbolsAround          (input, ' ', ALLOWED_AROUND_SPACE_CHARACTERS)
-           && !hasRestrictedSymbolsAround(input, 'x',  RESTRICTED_AROUND_X_CHARACTERS)
-           && !hasRestrictedSymbolsAround(input, 'X',  RESTRICTED_AROUND_X_CHARACTERS)
-           &&  hasOnlyAllowedCharacters  (input,    ALLOWED_EQUATION_INPUT_CHARACTERS)
-           &&  lengthOfTheLongestChunk   (input) < CHUNK_SIZE;
+    char inputBuffer[INPUT_SIZE];
+    strcpy(inputBuffer, input); // input[] --> inputBuffer[]
+    if (hasOnlyAllowedCharacters(inputBuffer, ALLOWED_AROUND_SPACE_CHARACTERS))
+    {
+        return false;
+    }
+
+    // Delete double spaces. We allow them =)
+    deleteRepetitiveCharacters(inputBuffer, ' '); 
+
+    char chunkBuffer[CHUNK_SIZE]{};
+    int chunkIndex = 0;
+
+    size_t inputBufferLength = sizeof(inputBuffer);
+    for (size_t i = 0; i <= inputBufferLength; i++)
+    {
+        if (hasCharacterInString(inputBuffer[i], DELIMITER) || i == inputBufferLength) // If it hits a delimiter.
+        {
+            // chunkBuffer -> isChunkCorrect
+            chunkBuffer[chunkIndex] = '\0';  
+            if (!isChunkCorrect(chunkBuffer))
+                return false;
+            // Reset chunkBuffer
+            chunkIndex = 0; 
+            chunkBuffer[0] = '\0';
+            continue;
+        }
+        chunkBuffer[chunkIndex] = inputBuffer[i];
+        chunkIndex++;
+    }  
+    return true;
 }
 
 
