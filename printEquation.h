@@ -11,7 +11,6 @@
 #include <math.h>
 #include <stdio.h>
 
-
 /**
  * @brief Prints out the answers of the equation.
  * 

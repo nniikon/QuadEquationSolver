@@ -26,7 +26,7 @@ enum INPUT_TYPE {
  * 
  * @return The selected `INPUT_TYPE`.
  */
-int askPreferredInput();
+INPUT_TYPE askPreferredInput();
 
 /**
  * @brief Prompts the user to input coefficients based on the input type.
@@ -38,6 +38,8 @@ void takeInput(Coefficients* coefficients, int inputType);
 
 /**
  * @brief Asks the user if they want to continue.
+ * 
+ * Waits for input (y\n). Keep prompting if user's input is invalid.
  * 
  * @return `true` if the user wants to continue, `false` otherwise.
  */

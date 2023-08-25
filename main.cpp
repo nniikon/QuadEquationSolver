@@ -7,48 +7,45 @@ x - 6 = 5x + 3
 x + 2x + 3*x = 5x^2
 */
 
+//#define TEST
+//#define LOG
+
 #include "test.h"
-#include "cfg.h"
 #include "inputCoefficients.h"
 #include "printEquation.h"
 #include "solveEquation.h"
-#include <iostream>
+
 /*
 TODO:
-
+0) start the program
 4) Try cloning assert;
 5) Use assert;
-11) Use "const Struct* struct" instead of "Struct struct"
 */
 
-//#define TEST
 
 int main()
 {
-	if (ENABLE_TESTS)
-	{
+	#ifdef TEST
 		testEquationInput();
 		testSolve();
-	}
-	else
+	#else
+
+	do
 	{
-		Coefficients coefficients{0, 0, 0};
-		Answers answers{0, 0, 0};
+		INPUT_TYPE inputType = askPreferredInput();
 
-		do
-		{
-			int inputType = askPreferredInput();
+		Coefficients coefficients{0.0, 0.0, 0.0};
+		Answers      answers{0.0, 0.0, NO_ROOTS};
 
-			resetStructs(&coefficients, &answers);
+		takeInput(&coefficients, inputType);
 
-			takeInput(&coefficients, inputType);
+		printFormattedEquation(&coefficients);
 
-			printFormattedEquation(&coefficients);
+		solve(&coefficients, &answers);
 
-			solve(&coefficients, &answers);
+		printAnswers(&answers);
 
-			printAnswers(&answers);
+	} while(wantToContinue());
 
-		} while(wantToContinue());
-	}
+	#endif
 }

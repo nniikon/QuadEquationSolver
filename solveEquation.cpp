@@ -7,13 +7,13 @@ void solve(const Coefficients* coefficients, Answers* answers)
     if (!areSameDouble(coefficients->a, 0.0))
     {
         double d = coefficients->b * coefficients->b - 4 * coefficients->a * coefficients->c; // Calculate the discriminant.
-
         // Check the value of the discriminant.
         if (d > 0)
         {
+            double sqrtd = sqrt(d);
             answers->answerType = TWO_ROOTS;
-            answers->x1 = (-coefficients->b + sqrt(d)) / (2.0 * coefficients->a);
-            answers->x2 = (-coefficients->b - sqrt(d)) / (2.0 * coefficients->a);
+            answers->x1 = (-coefficients->b + sqrtd) / (2.0 * coefficients->a);
+            answers->x2 = (-coefficients->b - sqrtd) / (2.0 * coefficients->a);
         }
         else if (areSameDouble(d, 0.0)) // Check if discriminant is close to zero.
         {
@@ -38,7 +38,7 @@ void solve(const Coefficients* coefficients, Answers* answers)
         }
         else
         {
-            answers->answerType = 0;
+            answers->answerType = NO_ROOTS;
         }
     }
 }

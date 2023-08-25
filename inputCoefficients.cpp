@@ -1,8 +1,10 @@
 #include "inputCoefficients.h"
+#include <assert.h>
+//#include <math.h>
 
 // Characters that are allowed to be used in different types of interactions with the user.
-static const char* const ALLOWED_EQUATION_INPUT_CHARACTERS = "1234567890-+=xX*^., ";
-static const char* const ALLOWED_COEFFICIENT_INPUT_CHARACTERS = "1234567890.-";
+static const char* const ALLOWED_EQUATION_INPUT_CHARACTERS = "1234567890-+=xX*^.,eE ";
+static const char* const ALLOWED_COEFFICIENT_INPUT_CHARACTERS = "1234567890.-eE";
 static const char* const ALLOWED_CONTINUE_INPUT_CHARACTERS = "yYnN";
 // Characters that must go with a space character. Otherwise the input is invalid.
 static const char* const ALLOWED_AROUND_SPACE_CHARACTERS = "+-=*";
@@ -11,18 +13,34 @@ static const char* const RESTRICTED_AROUND_X_CHARACTERS = "xX";
 // Characters that divide input string to chunks.
 static const char* const DELIMITER = "+-=";
 // Max sizes for the different types of input buffers.
-static const int MAX_INPUT_LENGTH = 512;
-static const int MAX_CHUNK_LENGTH = 32;
+/* 
+    I know it's cringe, but if you change INPUT_SIZE
+    don't forget to fix scanf("%255[^\n]", input)   =)
+*/
+static const int INPUT_SIZE = 256; 
+static const int CHUNK_SIZE = 32;
+
+
+//#define LOG
+
+// Clears the input buffer until a newline character is encountered.
+static void clearInputBuffer()
+{
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF)
+    {
+        // Consume characters from the input buffer.
+    }
+}
 
 
 // Removes occurrences of a specified character from the given string.
 static void deleteCharacter(char* input, unsigned int* inputLength, const char character)
 {
-	// Tracks the current position for the next character to be moved to.
-    int currentEmptySpace = 0;
+    unsigned int currentEmptySpace = 0;
 
     // Iterate through the input string.
-    for (unsigned int i = 0; i < *inputLength; i++)
+    for (unsigned int i = 0; i < *inputLength; ++i)
     {
         // If the current character is not the character to be deleted...
         if (input[i] != character)
@@ -36,7 +54,7 @@ static void deleteCharacter(char* input, unsigned int* inputLength, const char c
     // Update the input length after deleting characters.
     *inputLength = currentEmptySpace;
 
-    // Add the null terminator to the end of the modified string to ensure it remains valid.
+    // Add the null terminator to the end of the modified string.
     input[currentEmptySpace] = '\0';
 }
 
@@ -44,15 +62,15 @@ static void deleteCharacter(char* input, unsigned int* inputLength, const char c
 // Checks whether the characters in the input string are among the allowed characters.
 static bool hasOnlyAllowedCharacters(const char* input, const char* allowedCharacters)
 {
-    bool isListed;
-
+    unsigned int allowedCharactersLength = strlen(allowedCharacters); 
+    unsigned int inputLength             = strlen(input); 
     // Iterate through the input string.
-    for (unsigned int i = 0; i < strlen(input); i++)
+    for (unsigned int i = 0; i < inputLength; ++i)
     {
-        isListed = false;
+        bool isListed = false;
 
         // Check if the current character is among the allowed characters.
-        for (unsigned int j = 0; j < strlen(allowedCharacters); j++)
+        for (unsigned int j = 0; j < allowedCharactersLength; ++j)
         {
             if (input[i] == allowedCharacters[j])
             {
@@ -72,10 +90,12 @@ static bool hasOnlyAllowedCharacters(const char* input, const char* allowedChara
 
 
 // Checks if the given string has the character in it.
-static bool hasCharacterInString(char character, const char input[])
+static bool hasCharacterInString(const char character, const char input[])
 {
-    for (size_t i = 0; i < strlen(input); i++)
+    size_t inputLength = strlen(input);
+    for (size_t i = 0; i < inputLength; ++i)
 	{
+        assert(i < 1024);
         if (character == input[i])
         {
             return true;
@@ -86,9 +106,11 @@ static bool hasCharacterInString(char character, const char input[])
 
 
 // Returns true if every given character in the string has at least one of the other given characters around.
-static bool hasSymbolsAround(char input[], char givenCharacter, const char aroundCharacters[])
+static bool hasSymbolsAround(const char input[], const char givenCharacter, const char aroundCharacters[])
 {
-	for(size_t i = 0; i < strlen(input) - 1; i++)
+    size_t inputLength = strlen(input);
+
+	for(size_t i = 0; i < inputLength - 1; ++i)
 	{
 		if(input[i] == givenCharacter)
 		{
@@ -98,10 +120,10 @@ static bool hasSymbolsAround(char input[], char givenCharacter, const char aroun
 			// Check if the symbol is to the right.
 			bool isToTheRight = hasCharacterInString(input[i + 1], aroundCharacters);
 
-			// If its neither to the left nor to the right...
+			// If it's neither to the left nor to the right...
 			if (!(isToTheLeft || isToTheRight))
 			{
-				return false; // FAIL
+				return false; // fail.
 			}
 		}
 	}
@@ -109,10 +131,12 @@ static bool hasSymbolsAround(char input[], char givenCharacter, const char aroun
 }
 
 
-// Returns true if every given character in the string doens't have restricted characters around.
-static bool hasRestrictedSymbolsAround(char input[], char givenCharacter, const char aroundCharacters[])
+// Returns true if every given character in the string has no restricted characters around.
+static bool hasRestrictedSymbolsAround(const char input[], const char givenCharacter, const char aroundCharacters[])
 {
-	for(size_t i = 0; i < strlen(input) - 1; i++)
+    size_t inputLength = strlen(input);
+
+	for(size_t i = 0; i < inputLength - 1; ++i)
 	{
 		if(input[i] == givenCharacter)
 		{
@@ -125,59 +149,47 @@ static bool hasRestrictedSymbolsAround(char input[], char givenCharacter, const 
 			// If its neither to the left nor to the right...
 			if (isToTheLeft || isToTheRight)
 			{
-				return false; // FAIL
+				return true; // fail.
 			}
 		}
 	}
-	return true;
+	return false;
 }
 
 
-// Calculates length of the langest chunk in the given string
-static int maxChunkLength(const char* input)
+// Calculates length of the longest chunk in the given string.
+static int lengthOfTheLongestChunk(const char* input)
 {
-	int strSize = 0;
-	int maxSize = 0;
-	// Iterate through the input string
-	for (size_t i = 0; i <= strlen(input); i++)
+    size_t inputLength  = strlen(input);
+	int    chunkSize    = 0;
+	int    maxChunkSize = 0;
+
+	// Iterate through the input string.
+	for (size_t i = 0; i < inputLength; ++i)
 	{
-		strSize++;
+		chunkSize++;
 
-		if (input[i] == '\0' || hasCharacterInString(input[i], DELIMITER)) // If it hits a delimiter...
+		if (input[i + 1] == '\0' || hasCharacterInString(input[i], DELIMITER)) // If it hits a delimiter...
 		{
-			if (strSize > maxSize)
-				maxSize = strSize;
+			if (chunkSize > maxChunkSize)
+				maxChunkSize = chunkSize;
 
-			strSize = 0; // Reset the size
+			chunkSize = 0; // ...reset the size.
 		}
 	}
-	return maxSize;
+	return maxChunkSize;
 }
 
 
 // Checks if the given string is correct and can be used to set coefficients
-static bool isCorrect(char input[])
+static bool isEquationInputCorrect(const char input[])
 {
-	if (!hasSymbolsAround(input, ' ', ALLOWED_AROUND_SPACE_CHARACTERS))
-	{
-		return false;
-	}
-	if (!( hasRestrictedSymbolsAround(input, 'x', RESTRICTED_AROUND_X_CHARACTERS) &&
-	       hasRestrictedSymbolsAround(input, 'X', RESTRICTED_AROUND_X_CHARACTERS) )  )
-	{
-		return false;
-	}
-	if (maxChunkLength(input) >= 32)
-	{
-		return false;
-	}
-	if (!hasOnlyAllowedCharacters(input, ALLOWED_EQUATION_INPUT_CHARACTERS))
-	{
-		return false;
-	}
-	return true;
+    return     hasSymbolsAround          (input, ' ', ALLOWED_AROUND_SPACE_CHARACTERS)
+           && !hasRestrictedSymbolsAround(input, 'x',  RESTRICTED_AROUND_X_CHARACTERS)
+           && !hasRestrictedSymbolsAround(input, 'X',  RESTRICTED_AROUND_X_CHARACTERS)
+           &&  hasOnlyAllowedCharacters  (input,    ALLOWED_EQUATION_INPUT_CHARACTERS)
+           &&  lengthOfTheLongestChunk   (input) < CHUNK_SIZE;
 }
-
 
 
 // Processes the input string, preparing it for use with the setCoefficients() function.
@@ -233,7 +245,7 @@ static void setChunk(char* chunk, bool passedEqualSign, Coefficients* coefficien
         // Handle cases like x^2, +x^2, -x^2
         if ((len == 3) || (len == 4 && (chunk[0] == '-' || chunk[0] == '+')))
         {
-            chunk[len - 3] = '1'; // Replace 'x' with 1
+            chunk[len - 3] = '1'; // Coefficient is equal to '1'.
         }
     }
     // If the chunk ends with x, add to 'b' coefficient.
@@ -244,7 +256,7 @@ static void setChunk(char* chunk, bool passedEqualSign, Coefficients* coefficien
         // Handle cases like x, +x, -x
         if ((len == 1) || (len == 2 && (chunk[0] == '-' || chunk[0] == '+')))
         {
-            chunk[len - 1] = '1'; // Replace 'x' with 1
+            chunk[len - 1] = '1'; // Coefficient is equal to '1'.
         }
     }
     // Otherwise, treat it as a constant and add to 'c' coefficient.
@@ -284,10 +296,10 @@ static void setChunk(char* chunk, bool passedEqualSign, Coefficients* coefficien
 // Takes normalized string. Sets coefficients
 static void setCoefficients(char* input, Coefficients* coefficients)
 {
-    bool passedEqualSign = false;  // Flag to track whether the equal sign has been encountered
-    int len = strlen(input);        // Length of the input string
-    char strChunk[MAX_CHUNK_LENGTH]{};  // Temporary buffer to store chunks of the string
-    int chunkCounter = 0;           // Counter for the buffer index
+    bool passedEqualSign = false;   // Flag to track whether the equal sign has been encountered.
+    int len = strlen(input);        // Length of the input string.
+    char chunkBuffer[CHUNK_SIZE]{}; // Temporary buffer to store chunks of the string.
+    int chunkCounter = 0;           // Counter for the buffer index.
 
     // Iterate through the input string
     for (int i = 0; i <= len; i++)
@@ -295,20 +307,20 @@ static void setCoefficients(char* input, Coefficients* coefficients)
         // If a delimiter is encountered (+, -, =, \0)
         if (input[i] == '\0' || hasCharacterInString(input[i], DELIMITER))
         {
-            strChunk[chunkCounter] = '\0';  // Terminate the string in the buffer
-            chunkCounter = 0;  // Reset the counter for the next chunk
-            setChunk(strChunk, passedEqualSign, coefficients);  // Process the chunk
+            chunkBuffer[chunkCounter] = '\0';                     // Terminate the string in the buffer
+            chunkCounter = 0;                                     // Reset the counter for the next chunk
+            setChunk(chunkBuffer, passedEqualSign, coefficients); // Process the chunk
 
-            // If the current symbol is the equal sign, set the flag
+            // If the current symbol is the equal sign, set the flag.
             if (input[i] == '=')
             {
                 passedEqualSign = true;
-                continue; // Skip iteration to prevent equal sign from interfering with processing
+                continue; // Skip iteration to prevent equal sign from interfering with processing,
             }
         }
 
-        strChunk[chunkCounter] = input[i];  // Add the character to the buffer
-        chunkCounter++;  // Increment the buffer counter
+        chunkBuffer[chunkCounter] = input[i]; // Add the character to the buffer
+        chunkCounter++;                       // Increment the buffer counter
     }
 }
 
@@ -316,75 +328,80 @@ static void setCoefficients(char* input, Coefficients* coefficients)
 // Prompts the user to input a single coefficient.
 static void askCoefficient(double* coef, const char name)
 {
-	char buffer[MAX_CHUNK_LENGTH]; // Buffer to store user's input.
-    double validNumber = 0;
-	bool isValid = false;
+    #ifdef LOG 
+        printf("\t\tLOG: askCoefficient started.\n");
+    #endif
+
+	char   input[INPUT_SIZE]{};        // Buffer to store user's input.
+    double validCoefficient   =  0.0 ;
+	bool   isValidInput       = false;
     // A loop that keeps prompting the user until valid input is provided.
-    do
+    while (!isValidInput)
     {
         printf("Please enter coefficient %c: ", name);
-        scanf("%[^\n]", buffer); // Read a string from the user's input.
-		validNumber = atof(buffer); // Attempt to read a double from the buffer.
-		isValid = hasOnlyAllowedCharacters(buffer, ALLOWED_COEFFICIENT_INPUT_CHARACTERS);
+        scanf("%255[^\n]", input);    // Read a string from the user's input.
+        clearInputBuffer();
+		isValidInput = hasOnlyAllowedCharacters(input, ALLOWED_COEFFICIENT_INPUT_CHARACTERS)
+                    && strlen(input) < CHUNK_SIZE 
+                    && strlen(input) != 0;
 
-        if (!isValid)
+        #ifdef LOG
+            printf("\t\tLOG: isValidInput = %d.\n", isValidInput);
+            printf("\t\tLOG: input[] = '%s'\n", input);
+            printf("\t\tLOG: Strlen(input) = %d\n", strlen(input));
+        #endif
+
+        if (!isValidInput)
         {
             printf("Invalid input.\n");
-            // Clear the input buffer.
-            while (getchar() != '\n')
-			    ; 
         }
 
-    } while (!isValid); // Continue the loop as long as the input is invalid.
+    } // Continue the loop as long as the input is invalid.
 
-	*coef = validNumber; // Set the coefficient.
-    // Clear the input buffer.
+    validCoefficient = atof(input);
+	*coef = validCoefficient; // Set the coefficient.
+
 }
 
 
 // Prompts the user to input coefficients and sets them in the provided structure.
 static void takeCoefficientInput(Coefficients* coefficients)
 {
-	// Clean the input buffer.
-	while(getchar() != '\n')
-        ;
-
 	askCoefficient(&(coefficients->a), 'a');
 
-	while (getchar() != '\n')
-		;
-
     askCoefficient(&(coefficients->b), 'b');
-
-    while (getchar() != '\n')
-		;
 
     askCoefficient(&(coefficients->c), 'c');
 }
 
 
-// 
+// Promts the user to input a valid equation.
 static void setEquationInput(char input[])
 {
-    // Clear the input buffer.
-    while (getchar() != '\n')
-		; 
+    #ifdef LOG
+        printf("\t\tLOG: setEquationInput start.\n");
+    #endif
 
-    do
+    bool isValidInput = false;
+    while (true)
     {
         printf("Enter your equation: ");
-        scanf("%[^\n]", input);
-
-        if (!isCorrect(input))
+        scanf("%255[^\n]", input);
+        clearInputBuffer();
+        isValidInput = isEquationInputCorrect(input);
+        #ifdef LOG
+            printf("\t\tLOG: isValidInput = %d.\n", isValidInput);
+            printf("\t\tLOG: input[] = %s.\n", input);
+        #endif
+        if (!isValidInput) // If the input is incorrect...
         {
-            printf("Invalid input.\n");
-            input[0] = '\n'; // Clear the input.
-
-            // Clear the input buffer.
-            while (getchar() != '\n')
-			    ; 
+            printf("Invalid input.\n"); // 
         }
-    } while (!isCorrect(input)); // Repeat until valid input is received.
+        else
+        {
+            return;
+        }
+    }
 }
 
 
@@ -401,8 +418,11 @@ void equationInputToCoefficients(Coefficients* coefficients, char input[])
 }
 
 
-int askPreferredInput() {
-    char inputBuffer[MAX_CHUNK_LENGTH];  // Buffer for input
+// Promts the user to input and returns a valid input type.
+INPUT_TYPE askPreferredInput() {
+
+    char input[INPUT_SIZE];  // Buffer for input
+    bool isValidInput = false;
 
     while (true) {
         // Display the menu of choices
@@ -411,20 +431,19 @@ int askPreferredInput() {
                "(2) Equation input\n");
 
         // Read the user's input
-        scanf("%s", inputBuffer);
-        int choice = inputBuffer[0];  // Take the first character
+        scanf("%255[^\n]", input);
+        clearInputBuffer();
+        isValidInput = hasOnlyAllowedCharacters(input, "12") && strlen(input) == 1;
+        char choice = input[0];  // Take the first character
 
         // Check the user's choice and return the corresponding input type
-        if (choice == '1') {
+        if (choice == '1' && isValidInput) {
             return COEFFICIENT_INPUT;
-        } else if (choice == '2') {
+        } else if (choice == '2' && isValidInput) {
             return EQUATION_INPUT;
         } else {
             // Invalid input, inform the user and loop again
             printf("Invalid input. Please choose 1 or 2.\n");
-            // Clear the input buffer.
-			while (getchar() != '\n')
-			    ;
         }
     }
 }
@@ -433,7 +452,7 @@ int askPreferredInput() {
 // Promts user to enter the equation and sets the corresponding coefficients. 
 static void takeEquationInput(Coefficients* coefficients)
 {
-    char input[MAX_INPUT_LENGTH];
+    char input[INPUT_SIZE];
     setEquationInput(input);
     equationInputToCoefficients(coefficients, input);
 }
@@ -450,6 +469,7 @@ void takeInput(Coefficients* coefficients, int inputType)
 		takeCoefficientInput(coefficients);
 		break;
 	default:
+        assert(0);
 		printf("Invalid input type\n"); // Never occurs.
 		break;
 	}
@@ -458,27 +478,26 @@ void takeInput(Coefficients* coefficients, int inputType)
 
 bool wantToContinue()
 {
-    char input[MAX_CHUNK_LENGTH];
-    while (true)
+    char input[INPUT_SIZE]; 
+    while (true) // for (;;)
 	{
-		// Clear the input buffer.
-		while (getchar() != '\n')
-			;
 
         printf("Do you want to solve another equation? (y/n): ");
-        scanf("%[^\n]", input);
-
+        scanf("%255[^\n]", input);
+        clearInputBuffer();
+        bool isValidInput = hasOnlyAllowedCharacters(input, ALLOWED_CONTINUE_INPUT_CHARACTERS) && strlen(input) == 1;
         // Check if the input is correct
-		if(hasOnlyAllowedCharacters(input, ALLOWED_CONTINUE_INPUT_CHARACTERS) && strlen(input) == 1)
+		if(isValidInput)
 		{
 			if (input[0] == 'y' || input[0] == 'Y')
-				return true;
+            	return true;
 			else if (input[0] == 'n' || input[0] == 'N')
 				return false;
 			else
 			{
-				// Shouldn't occure
+				// Shouldn't occur
 				printf("ERROR. Invalid input. Please enter 'y' or 'n'.\n");
+                assert(0);
 			}
 		}
 		else

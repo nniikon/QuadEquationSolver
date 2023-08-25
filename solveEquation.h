@@ -7,7 +7,6 @@
 #ifndef SOLVE_EQUATION_H
 #define SOLVE_EQUATION_H
 
-
 #include "doubleOperations.h"
 #include "equationParams.h"
 #include <math.h>
