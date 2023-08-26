@@ -31,12 +31,12 @@ int main()
 
 	do
 	{
-		INPUT_TYPE inputType = askPreferredInput();
+		INPUT_TYPE inputType = readPreferredInput();
 
 		Coefficients coefficients{0.0, 0.0,   0.0   };
 		Answers      answers     {0.0, 0.0, NO_ROOTS};
 
-		takeInput(&coefficients, inputType);
+		readInput(&coefficients, inputType);
 
 		printFormattedEquation(&coefficients);
 

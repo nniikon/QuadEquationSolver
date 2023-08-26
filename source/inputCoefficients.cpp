@@ -1,6 +1,5 @@
 #include "../include/inputCoefficients.h"
 #include <assert.h>
-//#include <math.h>
 
 // Characters that are allowed to be used in different types of interactions with the user.
 static const char* const ALLOWED_EQUATION_INPUT_CHARACTERS = "1234567890-+=xX*^.,eE ";
@@ -8,10 +7,9 @@ static const char* const ALLOWED_COEFFICIENT_INPUT_CHARACTERS = "1234567890.-eE"
 static const char* const ALLOWED_CONTINUE_INPUT_CHARACTERS = "yYnN";
 // Characters that must go with a space character. Otherwise the input is invalid.
 static const char* const ALLOWED_AROUND_SPACE_CHARACTERS = "+-=*";
-// Characters that can't go with a 'x' character.  Otherwise the input is invalid.
-static const char* const RESTRICTED_AROUND_X_CHARACTERS = "xX";
 // Characters that divide input string to chunks.
 static const char* const DELIMITER = "+-=";
+
 // Max sizes for the different types of input buffers.
 /* 
     I know it's cringe, but if you change INPUT_SIZE
@@ -160,13 +158,15 @@ static int lengthOfTheLongestChunk(const char* input)
 }
 
 
+// This function accepts a string and a character as input. 
+// It scans through the string and removes consecutive occurrences of the specified character.
 static void deleteRepetitiveCharacters(char input[], const char character)
 {
     size_t currentEmptySpace = 0;
     size_t inputLength = strlen(input);
 
     // Iterate through the input string.
-    for (size_t i = 0; i < inputLength; ++i) // Fix loop condition
+    for (size_t i = 0; i < inputLength; ++i)
     {
         // If the current character is not the character to be deleted...
         if (input[i] != character || input[i + 1] != character)
@@ -180,11 +180,16 @@ static void deleteRepetitiveCharacters(char input[], const char character)
     input[currentEmptySpace] = '\0';
 }
 
+
+// Returns `true` if the character can be used to write a number, otherwise `false`.
 static bool isNumberCharacter(const char character)
 {
     return hasCharacterInString(character, "1234567890.,-=eE");
 }
 
+
+// Check if the given chunk is correct and can be used to set coefficients.
+// Takes the chunk from `isEquationInputCorrect()`.
 static bool isChunkCorrect(const char chunk[])
 {
     size_t chunkLength = sizeof(chunk);
@@ -214,11 +219,11 @@ static bool isChunkCorrect(const char chunk[])
         {
             nCaretsInChunk++;
             // If ^2 goes without X.
-            if ((i != 0 && chunk[i - 1] == 'x') || i == 0)
+            if ((i != 0 && chunk[i - 1] != 'x') || i == 0)
                 return false;
         }
-        // If the number is the first character but not ^2...
-        // or if the number goes after a non-number character but not ^2...
+        // If the number is the first character (but not ^2)...
+        // or if the number goes after a non-number character (but not ^2)...
         else if ( (isNumberCharacter(chunk[i]) && i == 0                             && chunk[i - 1] != '^')
                || (isNumberCharacter(chunk[i]) && !(isNumberCharacter(chunk[i - 1])) && chunk[i - 1] != '^') )
         {
@@ -409,8 +414,8 @@ static void setCoefficients(char* input, Coefficients* coefficients)
         // If a delimiter is encountered (+, -, =, \0)
         if (input[i] == '\0' || hasCharacterInString(input[i], DELIMITER))
         {
-            chunkBuffer[chunkCounter] = '\0';                     // Terminate the string in the buffer
-            chunkCounter = 0;                                     // Reset the counter for the next chunk
+            chunkBuffer[chunkCounter] = '\0'; // Terminate the string in the buffer
+            chunkCounter = 0;                 // Reset the counter for the next chunk
             parseChunkToCoefficient(chunkBuffer, passedEqualSign, coefficients); // Process the chunk
 
             // If the current symbol is the equal sign, set the flag.
@@ -428,10 +433,10 @@ static void setCoefficients(char* input, Coefficients* coefficients)
 
 
 // Prompts the user to input a single coefficient.
-static void askCoefficient(double* coef, const char name)
+static void readCoefficient(double* coef, const char name)
 {
     #ifdef LOG 
-        printf("\t\tLOG: askCoefficient started.\n");
+        printf("\t\tLOG: readCoefficient started.\n");
     #endif
 
 	char   input[INPUT_SIZE]{};        // Buffer to store user's input.
@@ -469,19 +474,19 @@ static void askCoefficient(double* coef, const char name)
 // Prompts the user to input coefficients and sets them in the provided structure.
 static void takeCoefficientInput(Coefficients* coefficients)
 {
-	askCoefficient(&(coefficients->a), 'a');
+	readCoefficient(&(coefficients->a), 'a');
 
-    askCoefficient(&(coefficients->b), 'b');
+    readCoefficient(&(coefficients->b), 'b');
 
-    askCoefficient(&(coefficients->c), 'c');
+    readCoefficient(&(coefficients->c), 'c');
 }
 
 
 // Promts the user to input a valid equation.
-static void setEquationInput(char input[])
+static void readEquationInput(char input[])
 {
     #ifdef LOG
-        printf("\t\tLOG: setEquationInput start.\n");
+        printf("\t\tLOG: readEquationInput start.\n");
     #endif
 
     bool isValidInput = false;
@@ -521,7 +526,7 @@ void equationInputToCoefficients(Coefficients* coefficients, char input[])
 
 
 // Promts the user to input and returns a valid input type.
-INPUT_TYPE askPreferredInput() {
+INPUT_TYPE readPreferredInput() {
 
     char input[INPUT_SIZE];  // Buffer for input
     bool isValidInput = false;
@@ -555,12 +560,12 @@ INPUT_TYPE askPreferredInput() {
 static void takeEquationInput(Coefficients* coefficients)
 {
     char input[INPUT_SIZE];
-    setEquationInput(input);
+    readEquationInput(input);
     equationInputToCoefficients(coefficients, input);
 }
 
 
-void takeInput(Coefficients* coefficients, int inputType)
+void readInput(Coefficients* coefficients, int inputType)
 {
 	switch(inputType)
 	{
@@ -575,6 +580,14 @@ void takeInput(Coefficients* coefficients, int inputType)
 		printf("Invalid input type\n"); // Never occurs.
 		break;
 	}
+
+    // Coefficient a should always be greater than zero!
+    if (coefficients->a < 0)
+    {
+        coefficients->a *= -1.0;
+        coefficients->b *= -1.0;
+        coefficients->c *= -1.0;
+    }
 }
 
 

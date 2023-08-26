@@ -26,7 +26,7 @@ enum INPUT_TYPE {
  * 
  * @return The selected `INPUT_TYPE`.
  */
-INPUT_TYPE askPreferredInput();
+INPUT_TYPE readPreferredInput();
 
 /**
  * @brief Prompts the user to input coefficients based on the input type.
@@ -34,7 +34,7 @@ INPUT_TYPE askPreferredInput();
  * @param [out] coefficients Pointer to the Coefficients structure where input coefficients will be stored.
  * @param [in]  inputType    The input type.
  */
-void takeInput(Coefficients* coefficients, int inputType);
+void readInput(Coefficients* coefficients, int inputType);
 
 /**
  * @brief Asks the user if they want to continue.
