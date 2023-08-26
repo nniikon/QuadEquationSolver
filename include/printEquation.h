@@ -10,6 +10,8 @@
 #include "doubleOperations.h"
 #include <math.h>
 #include <stdio.h>
+#include <assert.h>
+#include <string.h>
 
 /**
  * @brief Prints out the answers of the equation.

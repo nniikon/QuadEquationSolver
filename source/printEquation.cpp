@@ -1,58 +1,80 @@
 #include "../include/printEquation.h"
+
+static void printSingleCoefficient(const double coefficient, const char coefficientChar, const bool isFirstCoefficient)
+{
+    if (areSameDouble(coefficient, 0.0))
+    {
+        return;
+    }
+    
+    char postfix[] = "ERROR!";
+    switch (coefficientChar)
+    {
+    case 'a':
+        strcpy(postfix, "x^2 ");
+        break;
+    case 'b':
+        strcpy(postfix, "x ");
+        break;
+    case 'c':
+        strcpy(postfix, " ");
+        break;
+    default:
+        assert(0);
+        break;
+    }
+
+    if (isFirstCoefficient)
+    {
+        if (coefficient < 0.0)
+        {   
+            printf("-");
+        }
+    }
+    else 
+    {
+        if (coefficient > 0)
+        {   
+            printf("+ ");
+        }
+        else 
+        {
+            printf("- ");
+        }
+    }
+
+    if (coefficientChar != 'c' && (areSameDouble(coefficient, 1.0) || areSameDouble(coefficient, -1.0)))
+    {
+        // If coefficient = +-1, no coefficient need to be printed.
+        printf("%s", postfix);
+    }
+    else
+    {
+        printf("%g%s", fabs(coefficient), postfix);
+    }
+    
+}
+
+
+
 void printFormattedEquation(const Coefficients* coefficients)
 {
     printf("\n");
-	// Careful govnokod
-    // Handle cases where both a and b coefficients are zero.
-    if (areSameDouble(coefficients->a, 0.0) && areSameDouble(coefficients->b, 0.0))
-    {
-        if (areSameDouble(coefficients->c, 0.0))
-            printf("0 == 0\n");
-        else
-            printf("%g != 0\n", coefficients->c);
-        return;
-    }
+    bool isA_First = false;
+    bool isB_First = false;
+    bool isC_First = false;
+    if      (!areSameDouble(coefficients->a, 0.0)) // a != 0
+        isA_First = true;
+    else if (!areSameDouble(coefficients->b, 0.0)) // a == 0, b != 0
+        isB_First = true;
+    else if (!areSameDouble(coefficients->c, 0.0)) // a == 0, b == 0, c != 0
+        isC_First = true;
+    else                                           // a == 0, b == 0, c == 0;
+        printf("0 = 0");
 
-    // a coefficient.
-    if (!areSameDouble(coefficients->a, 0.0))
-    {
-        if (areSameDouble(coefficients->a, -1.0))
-            printf("-x^2 ");
-        else if (areSameDouble(coefficients->a, 1.0))
-            printf("x^2 ");
-        else
-            printf("%gx^2 ", coefficients->a);
-    }
-
-    // b coefficient.
-    if (!areSameDouble(coefficients->b, 0.0))
-    {
-        if (coefficients->b < 0 && !areSameDouble(coefficients->a, 0.0))
-            printf("- ");
-		else if (coefficients->b < 0 && areSameDouble(coefficients->a, 0.0))
-			printf("-");
-        else if (!areSameDouble(coefficients->a, 0.0))
-            printf("+ ");
-
-        if (areSameDouble(coefficients->b, -1.0))
-            printf("x ");
-        else if (areSameDouble(coefficients->b, 1.0))
-            printf("x ");
-        else
-            printf("%gx ", fabs(coefficients->b));
-    }
-
-    // c coefficient.
-    if (!areSameDouble(coefficients->c, 0.0))
-    {
-        if (coefficients->c < 0)
-            printf("- %g ", -coefficients->c);
-        else if (!areSameDouble(coefficients->b, 0.0) || !areSameDouble(coefficients->a, 0.0))
-            printf("+ %g ", coefficients->c);
-        else
-            printf("%g ", coefficients->c);
-    }
-
+    printSingleCoefficient(coefficients->a, 'a', isA_First);
+    printSingleCoefficient(coefficients->b, 'b', isB_First);
+    printSingleCoefficient(coefficients->c, 'c', isC_First);
     printf("= 0\n\n");
 }
 
@@ -84,4 +106,3 @@ void printAnswers(const Answers* answers)
         break;
     }
 }
-

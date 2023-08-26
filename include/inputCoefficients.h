@@ -39,7 +39,7 @@ void readInput(Coefficients* coefficients, int inputType);
 /**
  * @brief Asks the user if they want to continue.
  * 
- * Waits for input (y\n). Keep prompting if user's input is invalid.
+ * Waits for input (y\n). Keep prompting if the user input is invalid.
  * 
  * @return `true` if the user wants to continue, `false` otherwise.
  */
