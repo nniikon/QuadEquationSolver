@@ -472,7 +472,7 @@ static void readCoefficient(double* coef, const char name)
 
 
 // Prompts the user to input coefficients and sets them in the provided structure.
-static void takeCoefficientInput(Coefficients* coefficients)
+static void readCoefficientInput(Coefficients* coefficients)
 {
 	readCoefficient(&(coefficients->a), 'a');
 
@@ -573,7 +573,7 @@ void readInput(Coefficients* coefficients, int inputType)
 		takeEquationInput(coefficients);
 		break;
 	case COEFFICIENT_INPUT:
-		takeCoefficientInput(coefficients);
+		readCoefficientInput(coefficients);
 		break;
 	default:
         assert(0);
