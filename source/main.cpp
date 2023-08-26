@@ -1,25 +1,10 @@
-/*
-Equation Input might look something like this:
-5x^2 - 3*x + 15 = 14 - 2x + 3x^2
-5*x^2 - 15 = 0
-3x^2 - 2x + 2
-x - 6 = 5x + 3
-x + 2x + 3*x = 5x^2
-*/
-
-//#define TEST
-//#define LOG
-
 #include "../include/test.h"
 #include "../include/inputCoefficients.h"
 #include "../include/printEquation.h"
 #include "../include/solveEquation.h"
 
-/*
-TODO:
-4) Try cloning assert;
-5) Use assert;
-*/
+//#define TEST
+//#define LOG
 
 
 int main()
@@ -31,12 +16,12 @@ int main()
 
 	do
 	{
-		INPUT_TYPE inputType = readPreferredInput();
+		INPUT_TYPE inputType = getPreferredInput();
 
 		Coefficients coefficients{0.0, 0.0,   0.0   };
 		Answers      answers     {0.0, 0.0, NO_ROOTS};
 
-		readInput(&coefficients, inputType);
+		setCoefficients(&coefficients, inputType);
 
 		printFormattedEquation(&coefficients);
 

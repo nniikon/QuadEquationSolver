@@ -6,8 +6,8 @@ EXE_NAME = KBADPATKA.exe
 
 all: start
 
-start: $(BUILD_DIR)\test.o $(BUILD_DIR)\solveEquation.o $(BUILD_DIR)\printEquation.o $(BUILD_DIR)\inputCoefficients.o $(BUILD_DIR)\doubleOperations.o $(BUILD_DIR)\main.o
-	g++ $(BUILD_DIR)\test.o $(BUILD_DIR)\solveEquation.o $(BUILD_DIR)\printEquation.o $(BUILD_DIR)\inputCoefficients.o $(BUILD_DIR)\doubleOperations.o $(BUILD_DIR)\main.o $(FLAGS) -o $(EXE_NAME)
+start: $(BUILD_DIR)\test.o $(BUILD_DIR)\solveEquation.o $(BUILD_DIR)\printEquation.o $(BUILD_DIR)\inputCoefficients.o $(BUILD_DIR)\doubleOperations.o $(BUILD_DIR)\main.o $(BUILD_DIR)\readInput.o
+	g++ $(BUILD_DIR)\test.o $(BUILD_DIR)\solveEquation.o $(BUILD_DIR)\printEquation.o $(BUILD_DIR)\inputCoefficients.o $(BUILD_DIR)\doubleOperations.o $(BUILD_DIR)\main.o $(BUILD_DIR)\readInput.o $(FLAGS) -o $(EXE_NAME)
 
 $(BUILD_DIR)\main.o: $(SRC_DIR)\main.cpp
 	g++ $(SRC_DIR)\main.cpp -c $(FLAGS) -o $(BUILD_DIR)\main.o
@@ -23,6 +23,9 @@ $(BUILD_DIR)\printEquation.o: $(SRC_DIR)\printEquation.cpp
 	
 $(BUILD_DIR)\solveEquation.o: $(SRC_DIR)\solveEquation.cpp
 	g++ $(SRC_DIR)\solveEquation.cpp -c $(FLAGS) -o $(BUILD_DIR)\solveEquation.o
+
+$(BUILD_DIR)\readInput.o: $(SRC_DIR)\readInput.cpp
+	g++ $(SRC_DIR)\readInput.cpp -c $(FLAGS) -o $(BUILD_DIR)\readInput.o
 	
 $(BUILD_DIR)\test.o: $(SRC_DIR)\test.cpp
 	g++ $(SRC_DIR)\test.cpp -c $(FLAGS) -o $(BUILD_DIR)\test.o

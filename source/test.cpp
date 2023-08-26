@@ -61,7 +61,7 @@ static void testSingleEquationInput(char input[], Coefficients coefficientsRef)
     Coefficients coefficients = {0, 0, 0};
     
 	// Run the code that's being tested.
-	equationInputToCoefficients(&coefficients, input);
+	setCoefficients_stringInput(&coefficients, input);
 
 	// Compare with the expected values.
 	if (areSameDouble(coefficients.a, coefficientsRef.a) &&

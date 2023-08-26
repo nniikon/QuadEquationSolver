@@ -8,10 +8,11 @@
 
 #include "equationParams.h"
 #include "doubleOperations.h"
+#include "readInput.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <assert.h>
 
 /**
  * @brief Enumerates the possible types of user input.
@@ -26,7 +27,7 @@ enum INPUT_TYPE {
  * 
  * @return The selected `INPUT_TYPE`.
  */
-INPUT_TYPE readPreferredInput();
+INPUT_TYPE getPreferredInput();
 
 /**
  * @brief Prompts the user to input coefficients based on the input type.
@@ -34,7 +35,7 @@ INPUT_TYPE readPreferredInput();
  * @param [out] coefficients Pointer to the Coefficients structure where input coefficients will be stored.
  * @param [in]  inputType    The input type.
  */
-void readInput(Coefficients* coefficients, int inputType);
+void setCoefficients(Coefficients* coefficients, int inputType);
 
 /**
  * @brief Asks the user if they want to continue.
@@ -54,6 +55,6 @@ bool wantToContinue();
  * @param [in]  input        The input string representing the equation.
  * 
  */
-void equationInputToCoefficients(Coefficients* coefficients, char input[]);
+void setCoefficients_stringInput(Coefficients* coefficients, char input[]);
 
 #endif
