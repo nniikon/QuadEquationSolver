@@ -194,9 +194,9 @@ static bool isNumberCharacter(const char character)
    +----------------------------+
 */
 
+
 // Check if the given chunk is correct and can be used to set coefficients.
 // Takes the chunk from `isEquationInputCorrect()`.
-
 static bool isChunkCorrect(const char chunk[])
 {
     size_t chunkLength = sizeof(chunk);
@@ -234,7 +234,7 @@ static bool isChunkCorrect(const char chunk[])
         }
         // If the number is the first character (but not ^2)...
         // or if the number goes after a non-number character (but not ^2)...
-        else if ( (isNumberCharacter(chunk[i]) && i == 0                             && chunk[i - 1] != '^')
+        else if ( (isNumberCharacter(chunk[i]) &&              i == 0                && chunk[i - 1] != '^')
                || (isNumberCharacter(chunk[i]) && !(isNumberCharacter(chunk[i - 1])) && chunk[i - 1] != '^') )
         {
             nNumbersInChunk++; // ... that's a new number.
@@ -258,7 +258,7 @@ static bool isChunkCorrect(const char chunk[])
 
 
 
-// Checks if the given string is correct and can be used to set coefficients
+// Checks if the given string is correct and can be used to set coefficients.
 static bool isEquationInputCorrect(const char input[])
 {
     #ifdef LOG
@@ -307,6 +307,7 @@ static bool isEquationInputCorrect(const char input[])
     return true;
 }
 
+
 static bool isCoefficientInputCorrect(const char input[])
 {
     return hasOnlyAllowedCharacters(input, ALLOWED_COEFFICIENT_INPUT_CHARACTERS)
@@ -314,11 +315,13 @@ static bool isCoefficientInputCorrect(const char input[])
         && strlen(input) != 0;
 }
 
+
 static bool isWantToContinueInputCorrect(const char input[])
 {
     return hasOnlyAllowedCharacters(input, ALLOWED_CONTINUE_INPUT_CHARACTERS) 
         && strlen(input) == 1;
 }
+
 
 static bool isPreferredInputCorrect(const char input[])
 {
