@@ -25,22 +25,22 @@ enum ANSWER_TYPE {
  * @struct Coefficients
  * @brief A structure representing the coefficients of an equation.
  */
-typedef struct {
+struct Coefficients {
     double a; /**< Coefficient of x^2 */
     double b; /**< Coefficient of x */
-    double c; /**< Constant */
-} Coefficients;
+    double c; /**< Constant coefficient*/
+};
 
 
 /**
  * @struct Answers
  * @brief A structure to store the solutions and information about the type of solutions.
  */
-typedef struct {
+struct Answers{
     double x1;               /**< First root */
     double x2;               /**< Second root */
     ANSWER_TYPE answerType; /**< Type of solutions */
-} Answers;
+};
 
 
 #endif

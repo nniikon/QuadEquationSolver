@@ -1,7 +1,9 @@
 #include "../include/printEquation.h"
 
+// Prints a single coefficient with the following postfix (x^2, x, ).
 static void printSingleCoefficient(const double coefficient, const char coefficientChar, const bool isFirstCoefficient)
 {
+    // If coefficient is zero...
     if (areSameDouble(coefficient, 0.0))
     {
         return;
@@ -24,8 +26,10 @@ static void printSingleCoefficient(const double coefficient, const char coeffici
         break;
     }
 
+    // If the coefficient goes first...
     if (isFirstCoefficient)
     {
+        // ... you don't have to print '+' or any spaces
         if (coefficient < 0.0)
         {   
             printf("-");
