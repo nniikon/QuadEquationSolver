@@ -4,8 +4,10 @@
 static const char* const ALLOWED_EQUATION_INPUT_CHARACTERS = "1234567890-+=xX*^.,eE ";
 static const char* const ALLOWED_COEFFICIENT_INPUT_CHARACTERS = "1234567890.-eE";
 static const char* const ALLOWED_CONTINUE_INPUT_CHARACTERS = "yYnN";
+
 // Characters that must go with a space character. Otherwise the input is invalid.
 static const char* const ALLOWED_AROUND_SPACE_CHARACTERS = "+-=*";
+
 // Characters that divide input string to chunks.
 static const char* const DELIMITER = "+-=";
 
@@ -53,6 +55,7 @@ static bool hasOnlyAllowedCharacters(const char* input, const char* allowedChara
 {
     unsigned int allowedCharactersLength = strlen(allowedCharacters); 
     unsigned int inputLength             = strlen(input); 
+
     // Iterate through the input string.
     for (unsigned int i = 0; i < inputLength; ++i)
     {
@@ -95,6 +98,7 @@ static bool hasCharacterInString(const char character, const char input[])
             return true;
         }
     }
+
     return false;
 }
 
@@ -121,6 +125,7 @@ static bool hasSymbolsAround(const char input[], const char givenCharacter, cons
 			}
 		}
 	}
+
 	return true;
 }
 
@@ -194,7 +199,6 @@ static bool isNumberCharacter(const char character)
    +----------------------------+
 */
 
-
 // Check if the given chunk is correct and can be used to set coefficients.
 // Takes the chunk from `isEquationInputCorrect()`.
 static bool isChunkCorrect(const char chunk[])
@@ -255,7 +259,6 @@ static bool isChunkCorrect(const char chunk[])
     }
     return true;
 }
-
 
 
 // Checks if the given string is correct and can be used to set coefficients.
