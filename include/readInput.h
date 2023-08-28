@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 /**
  * @brief Prompt the user with the given message until they provide valid input as determined by the provided validation function.
@@ -18,5 +19,6 @@
  * @param [out] input          A string where the valid input will be stored.
  */
 void readInput(const char greetingString[], const char invalidString[], bool (*isValidInput)(const char []), char input[], size_t size);
+
 
 #endif
