@@ -92,9 +92,9 @@ static bool hasCharacterInString(const char character, const char input[])
 	{                                         //                   |
         if (character == input[i])            //                   |
         {                                     //                   |
-            return true; // DED COMMENTS  >>>----------------------+
+            return true; // TODO fix      >>>----------------------+
         }                // DO NOT TOUCH
-    }
+    }                    // DED COMMENTS
 
     return false;
 }
