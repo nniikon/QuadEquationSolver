@@ -8,7 +8,7 @@ void solve(const Coefficients* coefficients, Answers* answers)
     {
         double d = coefficients->b * coefficients->b - 4 * coefficients->a * coefficients->c; // Calculate the discriminant.
         // Check the value of the discriminant.
-        if (d > 0)
+        if (isGreaterDouble(d, 0.0)) // Check if discriminant is positive.
         {
             double sqrtd = sqrt(d);
             answers->answerType = TWO_ROOTS;

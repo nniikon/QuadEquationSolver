@@ -29,15 +29,15 @@ static void printSingleCoefficient(const double coefficient, const char coeffici
     // If the coefficient goes first...
     if (isFirstCoefficient)
     {
-        // ... you don't have to print '+' or any spaces
-        if (coefficient < 0.0)
+        // ... you don't have to print '+' or any spaces.
+        if (isLessDouble(coefficient, 0.0))
         {   
             printf("-");
         }
     }
     else 
     {
-        if (coefficient > 0)
+        if (isGreaterDouble(coefficient, 0.0))
         {   
             printf("+ ");
         }
@@ -49,7 +49,7 @@ static void printSingleCoefficient(const double coefficient, const char coeffici
 
     if (coefficientChar != 'c' && (areSameDouble(coefficient, 1.0) || areSameDouble(coefficient, -1.0)))
     {
-        // If coefficient = +-1, no coefficient need to be printed.
+        // If coefficient = +-1, no coefficient needs to be printed.
         printf("%s", postfix);
     }
     else
