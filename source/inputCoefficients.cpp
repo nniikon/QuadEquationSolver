@@ -445,15 +445,20 @@ static void setCoefficients_equationInput(char* input, Coefficients* coefficient
 // Prompts the user to input a single coefficient.
 static void setSingleCoefficient_coefficientInput(double* coef, const char name)
 {
+    #define ASK_USER "Please enter coefficient "
+
     char input[INPUT_SIZE]{};
-    char greetingString[] = "Please enter coefficient x: ";
-    
-    sprintf(greetingString, "Please enter coefficient %c: ", name);
+    char greetingString[] = ASK_USER "x: ";
+
+    // Set up the correct greetingString[].
+    sprintf(greetingString, ASK_USER "%c: ", name);
     char invalidString[] = "Invalid input. Try again: ";
 
     readInput(greetingString, invalidString, &isCoefficientInputCorrect, input, INPUT_SIZE);
 
 	*coef = atof(input);; // Set the coefficient.
+
+    #undef ASK_USER
 }
 
 
@@ -536,7 +541,7 @@ bool wantToContinue()
 
 
 // Promts the user to input and returns a valid input type.
-INPUT_TYPE getPreferredInput() 
+InputType getPreferredInput() 
 {
     char input[INPUT_SIZE];  // Buffer for input
 

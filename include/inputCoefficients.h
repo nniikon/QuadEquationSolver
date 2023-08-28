@@ -17,7 +17,7 @@
 /**
  * @brief Enumerates the possible types of user input.
  */
-enum INPUT_TYPE {
+enum InputType {
     COEFFICIENT_INPUT, /**< Coefficient input type */
     EQUATION_INPUT     /**< Equation input type */
 };
@@ -25,9 +25,9 @@ enum INPUT_TYPE {
 /**
  * @brief Prompts the user to select their preferred input type.
  * 
- * @return The selected `INPUT_TYPE`.
+ * @return The selected `InputType`.
  */
-INPUT_TYPE getPreferredInput();
+InputType getPreferredInput();
 
 /**
  * @brief Prompts the user to input coefficients based on the input type.

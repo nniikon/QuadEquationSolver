@@ -9,10 +9,10 @@
 
 
 /**
- * @enum ANSWER_TYPE
+ * @enum AnswerType
  * @brief Enumerates the possible types of solutions for an equation.
  */
-enum ANSWER_TYPE {
+enum AnswerType {
     NO_ROOTS,        /**< No real roots */
     ONE_ROOT,        /**< One real root */
     ONE_DOUBLE_ROOT, /**< One double (repeated) root */
@@ -36,10 +36,10 @@ struct Coefficients {
  * @struct Answers
  * @brief A structure to store the solutions and information about the type of solutions.
  */
-struct Answers{
-    double x1;               /**< First root */
-    double x2;               /**< Second root */
-    ANSWER_TYPE answerType; /**< Type of solutions */
+struct Answers {
+    double x1;              /**< First root */
+    double x2;              /**< Second root */
+    AnswerType answerType;  /**< Type of solutions */
 };
 
 

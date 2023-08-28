@@ -2,6 +2,7 @@
 #include "../include/inputCoefficients.h"
 #include "../include/printEquation.h"
 #include "../include/solveEquation.h"
+#include "../include/readInput.h"
 
 //#define TEST
 //#define LOG
@@ -16,7 +17,7 @@ int main()
 
 	do
 	{
-		INPUT_TYPE inputType = getPreferredInput();
+		InputType inputType = getPreferredInput();
 
 		Coefficients coefficients{0.0, 0.0,   0.0   };
 		Answers      answers     {0.0, 0.0, NO_ROOTS};
