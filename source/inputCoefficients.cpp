@@ -1,9 +1,9 @@
 #include "../include/inputCoefficients.h"
 
 // Characters that are allowed to be used in different types of interactions with the user.
-static const char* const ALLOWED_EQUATION_INPUT_CHARACTERS = "1234567890-+=xX*^.,eE ";
+static const char* const ALLOWED_EQUATION_INPUT_CHARACTERS    = "1234567890-+=xX*^.,eE ";
 static const char* const ALLOWED_COEFFICIENT_INPUT_CHARACTERS = "1234567890.-eE";
-static const char* const ALLOWED_CONTINUE_INPUT_CHARACTERS = "yYnN";
+static const char* const ALLOWED_CONTINUE_INPUT_CHARACTERS    = "yYnN";
 
 // Characters that must go with a space character. Otherwise the input is invalid.
 static const char* const ALLOWED_AROUND_SPACE_CHARACTERS = "+-=*";
@@ -15,7 +15,8 @@ static const char* const DELIMITER = "+-=";
 static const int INPUT_SIZE = 256;
 static const int CHUNK_SIZE = 32;
 
-//#define LOG
+
+#define LOG
 
 
 
@@ -53,16 +54,13 @@ static void deleteCharacter(char* input, unsigned int* inputLength, const char c
 // Checks whether the characters in the input string are among the allowed characters.
 static bool hasOnlyAllowedCharacters(const char* input, const char* allowedCharacters)
 {
-    unsigned int allowedCharactersLength = strlen(allowedCharacters); 
-    unsigned int inputLength             = strlen(input); 
-
     // Iterate through the input string.
-    for (unsigned int i = 0; i < inputLength; ++i)
+    for (unsigned int i = 0; input[i] != '\0'; ++i)
     {
         bool isListed = false;
 
         // Check if the current character is among the allowed characters.
-        for (unsigned int j = 0; j < allowedCharactersLength; ++j)
+        for (unsigned int j = 0; allowedCharacters[j] != '\0'; ++j)
         {
             if (input[i] == allowedCharacters[j])
             {
@@ -90,13 +88,12 @@ static bool hasOnlyAllowedCharacters(const char* input, const char* allowedChara
 // Checks if the given string has the character in it.
 static bool hasCharacterInString(const char character, const char input[])
 {
-    size_t inputLength = strlen(input);
-    for (size_t i = 0; i < inputLength; ++i)
-	{
-        if (character == input[i])
-        {
-            return true;
-        }
+    for (size_t i = 0; input[i] != '\0'; ++i) // <<<---------------+
+	{                                         //                   |
+        if (character == input[i])            //                   |
+        {                                     //                   |
+            return true; // DED COMMENTS  >>>----------------------+
+        }                // DO NOT TOUCH
     }
 
     return false;
@@ -106,17 +103,15 @@ static bool hasCharacterInString(const char character, const char input[])
 // Returns true if every given character in the string has at least one of the other given characters around.
 static bool hasSymbolsAround(const char input[], const char givenCharacter, const char aroundCharacters[])
 {
-    size_t inputLength = strlen(input);
-
-	for(size_t i = 0; i < inputLength - 1; ++i)
+	for (size_t i = 0; input[i + 1] != '\0'; ++i)
 	{
-		if(input[i] == givenCharacter)
+		if (input[i] == givenCharacter)
 		{
 			// Check if the symbol is to the left.
 			bool isToTheLeft = (i >= 1) && hasCharacterInString(input[i - 1], aroundCharacters);
 
 			// Check if the symbol is to the right.
-			bool isToTheRight = hasCharacterInString(input[i + 1], aroundCharacters);
+			bool isToTheRight =            hasCharacterInString(input[i + 1], aroundCharacters);
 
 			// If it's neither to the left nor to the right...
 			if (!(isToTheLeft || isToTheRight))
@@ -135,10 +130,9 @@ static bool hasSymbolsAround(const char input[], const char givenCharacter, cons
 static void deleteRepetitiveCharacters(char input[], const char character)
 {
     size_t currentEmptySpace = 0;
-    size_t inputLength = strlen(input);
 
     // Iterate through the input string.
-    for (size_t i = 0; i < inputLength; ++i)
+    for (size_t i = 0; input[i] != '\0'; ++i)
     {
         // If the current character is not the character to be deleted...
         if (input[i] != character || input[i + 1] != character)
@@ -169,15 +163,9 @@ static void normalizeEquationInput(char* input, unsigned int* inputLength)
     {
         switch(input[i])
         {
-        case 'X':
-            input[i] = 'x';
-            break;
-        case ',':
-            input[i] = '.';
-            break;
-		default:
-			// do nothing
-			break;
+            case 'X': input[i] = 'x'; break;
+            case ',': input[i] = '.'; break;
+            default: /* do nothing */ break;
         }
     }
 }
@@ -275,8 +263,8 @@ static bool isEquationInputCorrect(const char input[])
     deleteRepetitiveCharacters(inputBuffer, ' '); 
 
     // The first level of "protection".
-    if (!hasOnlyAllowedCharacters(inputBuffer, ALLOWED_EQUATION_INPUT_CHARACTERS) // Only has allowed characters.
-      ||!hasSymbolsAround(inputBuffer, ' ', ALLOWED_AROUND_SPACE_CHARACTERS))     // Spaces are in the right places.
+    if (!hasOnlyAllowedCharacters(inputBuffer,      ALLOWED_EQUATION_INPUT_CHARACTERS) // Only has allowed characters.
+      ||!hasSymbolsAround        (inputBuffer, ' ', ALLOWED_AROUND_SPACE_CHARACTERS))  // Spaces are in the right places.
     {
         return false;
     }
@@ -289,10 +277,10 @@ static bool isEquationInputCorrect(const char input[])
     char chunkBuffer[CHUNK_SIZE]{};
     int chunkIndex = 0;
 
-    size_t inputBufferLength = sizeof(inputBuffer);
-    for (size_t i = 0; i <= inputBufferLength; i++)
+
+    for (size_t i = 0; inputBuffer[i + 1] != '\0'; i++)
     {
-        if (hasCharacterInString(inputBuffer[i], DELIMITER) || i == inputBufferLength) // If it hits a delimiter or the end.
+        if (hasCharacterInString(inputBuffer[i], DELIMITER) || inputBuffer[i] == '\0') // If it hits a delimiter or the end.
         {
             // chunkBuffer[] -> isChunkCorrect()
             chunkBuffer[chunkIndex] = '\0';  
