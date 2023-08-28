@@ -7,7 +7,7 @@ EXE_NAME = KBADPATKA.exe
 all: start
 
 start: $(BUILD_DIR)\test.o $(BUILD_DIR)\solveEquation.o $(BUILD_DIR)\printEquation.o $(BUILD_DIR)\inputCoefficients.o $(BUILD_DIR)\doubleOperations.o $(BUILD_DIR)\main.o $(BUILD_DIR)\readInput.o
-	g++ $(BUILD_DIR)\test.o $(BUILD_DIR)\solveEquation.o $(BUILD_DIR)\printEquation.o $(BUILD_DIR)\inputCoefficients.o $(BUILD_DIR)\doubleOperations.o $(BUILD_DIR)\main.o $(BUILD_DIR)\readInput.o $(FLAGS) -o $(EXE_NAME)
+	g++ $(BUILD_DIR)\test.o $(BUILD_DIR)\solveEquation.o $(BUILD_DIR)\printEquation.o $(BUILD_DIR)\inputCoefficients.o $(BUILD_DIR)\doubleOperations.o $(BUILD_DIR)\main.o $(BUILD_DIR)\readInput.o $(FLAGS) -o $(BUILD_DIR)\$(EXE_NAME)
 
 $(BUILD_DIR)\main.o: $(SRC_DIR)\main.cpp
 	g++ $(SRC_DIR)\main.cpp -c $(FLAGS) -o $(BUILD_DIR)\main.o
