@@ -21,7 +21,7 @@ Now the only thing left to do is to run KBADRATKA.exe
 Now you can start your program!
 
 ```
-.\KBADRATKA.exe
+.\build\KBADRATKA.exe
 ```
 
 While coefficient input is fairly straightforward, equation input might pose more challenges.
