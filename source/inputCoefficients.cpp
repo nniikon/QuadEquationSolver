@@ -15,8 +15,7 @@ static const char* const DELIMITER = "+-=";
 static const int INPUT_SIZE = 256;
 static const int CHUNK_SIZE = 32;
 
-
-#define LOG
+//#define LOG
 
 
 
@@ -196,7 +195,7 @@ static bool isChunkCorrect(const char chunk[])
     int     nStarsInChunk     = 0; // Number of * in a chunk.
     int    nCaretsInChunk     = 0; // Number of ^ in a chunk.
     int   nNumbersInChunk     = 0; // Number of different numbers in a chunk.
-    bool   passedX        = false; // Checks if we already passed X.
+    bool  passedX         = false; // Checks if we already passed X.
 
     #ifdef LOG
         printf("\t\tLOG: chunk: <%s>\n", chunk);
@@ -222,6 +221,10 @@ static bool isChunkCorrect(const char chunk[])
             nCaretsInChunk++;
             // If ^2 goes without X.
             if ((i != 0 && chunk[i - 1] != 'x') || i == 0)
+                return false;
+
+            // If other power than '2'.
+            if (chunk[i + 1] != '2')
                 return false;
         }
         // If the number is the first character (but not ^2)...
@@ -353,7 +356,7 @@ static void parseChunkToCoefficient(char* chunk, bool passedEqualSign, Coefficie
         // Handle cases like x^2, +x^2, -x^2
         if ((len == 3) || (len == 4 && (chunk[0] == '-' || chunk[0] == '+')))
         {
-            chunk[len - 3] = '1'; // Coefficient is equal to '1'.
+            chunk[len - 3] = '1'; // Add the missing number '1'.
         }
     }
     // If the chunk ends with x, add to 'b' coefficient.
@@ -364,7 +367,7 @@ static void parseChunkToCoefficient(char* chunk, bool passedEqualSign, Coefficie
         // Handle cases like x, +x, -x
         if ((len == 1) || (len == 2 && (chunk[0] == '-' || chunk[0] == '+')))
         {
-            chunk[len - 1] = '1'; // Coefficient is equal to '1'.
+            chunk[len - 1] = '1'; // Add the missing number '1'.
         }
     }
     // Otherwise, treat it as a constant and add to 'c' coefficient.
@@ -405,30 +408,29 @@ static void parseChunkToCoefficient(char* chunk, bool passedEqualSign, Coefficie
 static void setCoefficients_equationInput(char* input, Coefficients* coefficients)
 {
     bool passedEqualSign = false;   // Flag to track whether the equal sign has been encountered.
-    int len = strlen(input);        // Length of the input string.
     char chunkBuffer[CHUNK_SIZE]{}; // Temporary buffer to store chunks of the string.
     int chunkCounter = 0;           // Counter for the buffer index.
 
     // Iterate through the input string
-    for (int i = 0; i <= len; i++)
+    for (int i = 0; input[i - 1] != '\0'; i++)
     {
-        // If a delimiter is encountered (+, -, =, \0)
+        // If a delimiter is encountered (+, -, =, \0).
         if (input[i] == '\0' || hasCharacterInString(input[i], DELIMITER))
         {
-            chunkBuffer[chunkCounter] = '\0'; // Terminate the string in the buffer
-            chunkCounter = 0;                 // Reset the counter for the next chunk
-            parseChunkToCoefficient(chunkBuffer, passedEqualSign, coefficients); // Process the chunk
+            chunkBuffer[chunkCounter] = '\0'; // Terminate the string in the buffer.
+            chunkCounter = 0;                 // Reset the counter for the next chunk.
+            parseChunkToCoefficient(chunkBuffer, passedEqualSign, coefficients); // Process the chunk.
 
             // If the current symbol is the equal sign, set the flag.
             if (input[i] == '=')
             {
                 passedEqualSign = true;
-                continue; // Skip iteration to prevent equal sign from interfering with processing,
+                continue; // Skip iteration to prevent equal sign from interfering with processing.
             }
         }
 
-        chunkBuffer[chunkCounter] = input[i]; // Add the character to the buffer
-        chunkCounter++;                       // Increment the buffer counter
+        chunkBuffer[chunkCounter] = input[i]; // Add the character to the buffer.
+        chunkCounter++;                       // Increment the buffer counter.
     }
 }
 
@@ -441,7 +443,7 @@ static void setSingleCoefficient_coefficientInput(double* coef, const char name)
     char input[INPUT_SIZE]{};
     char greetingString[] = ASK_USER "x: ";
 
-    // Set up the correct greetingString[].
+    // Set the correct greetingString[].
     sprintf(greetingString, ASK_USER "%c: ", name);
     char invalidString[] = "Invalid input. Try again: ";
 
@@ -492,15 +494,9 @@ void setCoefficients(Coefficients* coefficients, int inputType)
 {
 	switch(inputType)
 	{
-	case EQUATION_INPUT:
-		setCoefficients_equationInput(coefficients);
-		break;
-	case COEFFICIENT_INPUT:
-		setCoefficients_coefficientInput(coefficients);
-		break;
-	default:
-        assert(0);
-		break;
+        case    EQUATION_INPUT: setCoefficients_equationInput   (coefficients); break;
+        case COEFFICIENT_INPUT: setCoefficients_coefficientInput(coefficients); break;
+        default: assert(0);                                                     break;
 	}
 }
 
@@ -546,16 +542,10 @@ InputType getPreferredInput()
 
     // Check the user's choice and return the corresponding input type
     if (input[0] == '1') 
-    {
         return COEFFICIENT_INPUT;
-    } 
     else if (input[0] == '2') 
-    {
         return EQUATION_INPUT;
-    }
     else
-    {
         assert(0);
-    }
 
 }
