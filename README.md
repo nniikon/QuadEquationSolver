@@ -11,7 +11,7 @@ Use the following commands to download and compile the program.
 ```
 git clone https://github.com/nniikon/QuadEquationSolver.git
 cd .\QuadEquationSolver
-.\compile.bat
+make
 ```
 
 Now the only thing left to do is to run KBADRATKA.exe
